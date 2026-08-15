@@ -85,19 +85,41 @@ mongod --dbpath C:\data\db
 
 ---
 
-## Deploying the frontend to GitHub Pages
+## Deploying to GitHub Pages
+
+Deployment is automatic via GitHub Actions — [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) builds and publishes on every push to `development`.
+
+**One-time setup** (needed once, in the browser):
+
+1. Go to **Settings → Pages** in the repo.
+2. Under **Build and deployment → Source**, choose **GitHub Actions**.
+3. Push, or run the workflow by hand from the **Actions** tab (`Deploy to GitHub Pages` → *Run workflow*).
+
+The site then lives at **https://karthikdulam.github.io/planner/**
+
+Every later push to `development` redeploys it. Check progress in the **Actions** tab.
+
+### Why it works from a sub-path
+
+- `vite.config.js` sets `base: './'` → asset URLs are relative, so `/planner/` works with no extra config.
+- Routing is **HashRouter** → deep links like `#/t/dsa-sorting` need no server-side rewrites, which GitHub Pages cannot do.
+- `public/.nojekyll` stops Pages running the content through Jekyll.
+
+### The backend, from the deployed site
+
+The frontend is public; the API stays on your machine. Browsers treat `http://localhost` as a trustworthy origin, so an `https://` Pages site **is allowed** to call `http://localhost:4000` — meaning on the computer running `npm run server`, the deployed site is fully interactive.
+
+Everywhere else — your phone, another laptop, a colleague's browser — it silently falls back to read-only. All 137 topics still render; only the ticking, notes and scratchpad are hidden. That is the intended behaviour, not a failure.
+
+> Safari is stricter than Chrome/Edge/Firefox about localhost from https. If the badge stays on *read-only* on a Mac with the server running, use `npm run dev` locally instead.
+
+### Manual alternative
+
+`gh-pages` is still wired up if you ever want to push `dist/` to a branch by hand:
 
 ```bash
-npm install --save-dev gh-pages   # already in devDependencies
-npm run deploy
+npm run deploy      # then set Pages → Source → gh-pages branch
 ```
-
-Then in the repo settings, set **Pages → Source → gh-pages branch**.
-
-Notes:
-- Routing uses **HashRouter**, so no server rewrites are needed and deep links work.
-- `vite.config.js` sets `base: './'`, so it works from any sub-path.
-- Browsers allow `https://` pages to call `http://localhost` (localhost is treated as a trustworthy origin), so the backend still connects from the deployed site **on the machine running it**. On your phone it will simply be read-only, which is the intended behaviour.
 
 ---
 
