@@ -1,8 +1,9 @@
 /**
  * Prep Atlas — local API.
  *
- * Deliberately unauthenticated: it binds to 127.0.0.1 only and is meant to run
- * on the same machine as the browser. Do NOT expose this to a network.
+ * Deliberately unauthenticated: it binds to the loopback interfaces only
+ * (127.0.0.1 and ::1) and is meant to run on the same machine as the browser.
+ * Do NOT expose this to a network.
  *
  * Storage: one MongoDB collection, one document per topic.
  *   { _id: topicId, completed, completedAt, note, code, lang,
@@ -11,6 +12,7 @@
  * Run:  node server/server.js        (or: npm run server, from the repo root)
  */
 
+import http from 'http'
 import express from 'express'
 import cors from 'cors'
 import { MongoClient } from 'mongodb'
@@ -53,6 +55,19 @@ async function connectMongo() {
 /* ------------------------------------------------------------------ */
 
 const app = express()
+
+// Chrome/Edge "Private Network Access": a page served from a public origin
+// (the GitHub Pages site) calling a loopback address must be granted
+// permission ON THE PREFLIGHT, or the request is blocked.
+//
+// This must run BEFORE cors(), because cors() answers the OPTIONS preflight
+// itself and ends the response — anything registered after it never runs for
+// a preflight, so the header would be missing exactly where it is needed.
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Private-Network', 'true')
+  next()
+})
+
 app.use(cors())                          // local-only; any origin is fine
 app.use(express.json({ limit: '2mb' }))  // scratchpads can get long
 
@@ -157,17 +172,45 @@ app.use((err, req, res, next) => {
 
 await connectMongo()
 
-app.listen(PORT, HOST, () => {
-  console.log('')
-  console.log('  Prep Atlas API')
-  console.log(`  → http://${HOST}:${PORT}`)
-  console.log(`  → health:  http://${HOST}:${PORT}/api/health`)
-  console.log(`  → review:  http://${HOST}:${PORT}/api/review-queue`)
-  console.log('')
-})
+// On Windows, `localhost` resolves to ::1 (IPv6) BEFORE 127.0.0.1. Binding
+// only the IPv4 loopback means the browser's first attempt is refused, which
+// shows up as ERR_CONNECTION_REFUSED even though the server is running.
+// Bind both loopback addresses — still loopback only, never the network.
+const HOSTS = process.env.HOST ? [process.env.HOST] : ['127.0.0.1', '::1']
+const servers = []
+
+for (const host of HOSTS) {
+  const server = http.createServer(app)
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`  ✗ Port ${PORT} is already in use. Stop the other process, or set PORT.`)
+      process.exit(1)
+    }
+    // A machine with IPv6 disabled simply skips ::1 — not fatal.
+    if (err.code === 'EAFNOSUPPORT' || err.code === 'EADDRNOTAVAIL') {
+      console.warn(`  · skipped ${host} (not available on this machine)`)
+      return
+    }
+    throw err
+  })
+
+  server.listen(PORT, host, () => {
+    const shown = host.includes(':') ? `[${host}]` : host
+    console.log(`  → http://${shown}:${PORT}`)
+  })
+  servers.push(server)
+}
+
+console.log('')
+console.log('  Prep Atlas API')
+console.log(`  → health:  http://localhost:${PORT}/api/health`)
+console.log(`  → review:  http://localhost:${PORT}/api/review-queue`)
+console.log('')
 
 async function shutdown() {
   console.log('\n  Shutting down…')
+  await Promise.allSettled(servers.map((s) => new Promise((r) => s.close(r))))
   try { await client?.close() } catch { /* ignore */ }
   process.exit(0)
 }

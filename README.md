@@ -113,6 +113,18 @@ Everywhere else — your phone, another laptop, a colleague's browser — it sil
 
 > Safari is stricter than Chrome/Edge/Firefox about localhost from https. If the badge stays on *read-only* on a Mac with the server running, use `npm run dev` locally instead.
 
+### If the badge says read-only while the server IS running
+
+Check the browser console. `ERR_CONNECTION_REFUSED` means nothing was listening — that is not a browser security block, it is the API being down. Confirm with:
+
+```powershell
+Get-NetTCPConnection -LocalPort 4000 -State Listen
+```
+
+You should see **two** rows, `127.0.0.1` and `::1`. Both matter: on Windows `localhost` resolves to `::1` first, so an IPv4-only bind gets refused on the browser's first attempt. The server binds both.
+
+A *CORS* error mentioning "private network" instead means the preflight was rejected — the server sends `Access-Control-Allow-Private-Network: true` to satisfy that, and it must be set before `cors()` runs, since `cors()` answers the preflight itself.
+
 ### Manual alternative
 
 `gh-pages` is still wired up if you ever want to push `dist/` to a branch by hand:
@@ -141,7 +153,7 @@ The **Review queue** page in the app shows the same thing visually.
 
 ## API
 
-All endpoints are unauthenticated and bound to `127.0.0.1` only.
+All endpoints are unauthenticated and bound to the loopback interfaces only (`127.0.0.1` and `::1`) — never the network.
 
 | Method | Path | Purpose |
 |---|---|---|
@@ -180,9 +192,8 @@ curl http://localhost:4000/api/export > backups/prep-$(date +%F).json
 ## Project layout
 
 ```
-├── docs/
-│   └── the-block.html      # standalone single-page plan — open directly,
-│                           # no npm, no server. Good for phone/print.
+├── .github/workflows/
+│   └── deploy.yml          # builds + publishes to GitHub Pages on push
 ├── index.html
 ├── vite.config.js
 ├── src/
