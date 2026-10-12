@@ -3,12 +3,12 @@ export const hld = {
   name: 'System Design (HLD)',
   icon: '⬡',
   blurb: 'Usually the round with the least practice behind it, and the one that most separates offer bands at senior level. A repeatable framework, the building blocks, then nine worked case studies.',
-  weeks: 'Weeks 17–22',
+  weeks: 'Weeks 18–22 (weekends)',
   topics: [
     {
       id: 'hld-framework',
       name: 'The 45-minute framework',
-      week: 17, mins: 120, tag: 'core',
+      week: 18, mins: 120, tag: 'core',
       summary: 'The single most important topic here. A repeatable structure so you are never lost.',
       blocks: [
         { k: 'p', body: [
@@ -35,7 +35,7 @@ export const hld = {
     {
       id: 'hld-estimation',
       name: 'Back-of-envelope estimation',
-      week: 17, mins: 90, tag: 'core',
+      week: 18, mins: 90, tag: 'core',
       summary: 'Six numbers and aggressive rounding. This is the only arithmetic in the whole process.',
       blocks: [
         { k: 'p', body: [
@@ -152,7 +152,7 @@ export const hld = {
     {
       id: 'hld-cap-consistency',
       name: 'CAP, consistency & consensus',
-      week: 18, mins: 130,
+      week: 20, mins: 130,
       summary: 'What CAP actually says, and the consistency models that matter in practice.',
       blocks: [
         { k: 'p', title: 'CAP, stated correctly', body: [
@@ -176,7 +176,7 @@ export const hld = {
     {
       id: 'hld-building-blocks',
       name: 'Consistent hashing, idempotency & ID generation',
-      week: 19, mins: 140, tag: 'core',
+      week: 20, mins: 140, tag: 'core',
       summary: 'Three specific techniques that come up in almost every design.',
       blocks: [
         { k: 'p', title: 'Consistent hashing', body: [
@@ -222,7 +222,7 @@ public ResponseEntity<PaymentResponse> pay(
     {
       id: 'hld-microservices',
       name: 'Microservices & resilience',
-      week: 20, mins: 160,
+      week: 21, mins: 160,
       summary: 'When to split, and the patterns that stop one failure taking everything down.',
       blocks: [
         { k: 'p', title: 'When to split — and when not to', body: [
@@ -341,7 +341,7 @@ WRITE PATH:
     {
       id: 'hld-case-chat',
       name: 'Case study — chat system (WhatsApp)',
-      week: 19, mins: 170,
+      week: 22, mins: 170,
       summary: 'WebSockets, delivery guarantees, and presence at scale.',
       blocks: [
         { k: 'list', title: 'Requirements', items: [
@@ -405,7 +405,7 @@ CREATE TABLE user_conversations (
     {
       id: 'hld-case-newsfeed',
       name: 'Case study — news feed (Twitter/Instagram)',
-      week: 21, mins: 170,
+      week: 22, mins: 170,
       summary: 'Fan-out on write vs read. The celebrity problem, and the hybrid answer.',
       blocks: [
         { k: 'p', title: 'The single decision this design turns on', body: [

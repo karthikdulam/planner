@@ -3,12 +3,12 @@ export const messaging = {
   name: 'Messaging & Caching',
   icon: '⇄',
   blurb: 'Kafka and Redis to working depth — the model, then production-grade code you can actually ship. Enough to build with them correctly, not just to describe them.',
-  weeks: 'Weeks 19–21 (evenings)',
+  weeks: 'Weeks 18–19 (evenings)',
   topics: [
     {
       id: 'msg-why-queues',
       name: 'Why message queues exist',
-      week: 19, mins: 90,
+      week: 18, mins: 90,
       summary: 'The problem they solve, before any product names.',
       blocks: [
         { k: 'p', body: [
@@ -98,7 +98,7 @@ public class OrderEventConsumer {
     {
       id: 'msg-kafka-delivery',
       name: 'Kafka — delivery, ordering & failure',
-      week: 20, mins: 150,
+      week: 19, mins: 150,
       summary: 'At-least-once, consumer lag, rebalancing and dead-letter queues.',
       blocks: [
         { k: 'table', title: 'Delivery guarantees', head: ['Guarantee', 'How', 'Reality'], rows: [
@@ -201,7 +201,7 @@ public void handle(PaymentEvent event) {
     {
       id: 'msg-redis',
       name: 'Redis & caching patterns',
-      week: 21, mins: 150, tag: 'core',
+      week: 19, mins: 150, tag: 'core',
       summary: 'Cache-aside, TTLs, eviction, and the invalidation problem.',
       blocks: [
         { k: 'p', body: [

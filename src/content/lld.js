@@ -3,12 +3,12 @@ export const lld = {
   name: 'Low-Level Design',
   icon: '◱',
   blurb: 'Your strongest round. SOLID, the patterns that actually appear, and nine machine-coding problems worked through end to end.',
-  weeks: 'Weeks 9–18 (weekends)',
+  weeks: 'Weeks 10–17 (weekends)',
   topics: [
     {
       id: 'lld-approach',
       name: 'How to attack a machine coding round',
-      week: 9, mins: 100, tag: 'core',
+      week: 10, mins: 100, tag: 'core',
       summary: 'Ninety minutes, a blank file. The sequence that keeps you out of trouble.',
       blocks: [
         { k: 'p', body: [
@@ -31,7 +31,7 @@ export const lld = {
     {
       id: 'lld-solid',
       name: 'SOLID',
-      week: 9, mins: 130, tag: 'core',
+      week: 10, mins: 130, tag: 'core',
       summary: 'Five principles. Checked against code you have actually written.',
       blocks: [
         { k: 'code', lang: 'java', cap: 'S — Single Responsibility: one reason to change', src: `// BAD: this class changes when the DB changes, when the email template
@@ -110,7 +110,7 @@ class OrderServiceGood {
     {
       id: 'lld-creational',
       name: 'Creational patterns',
-      week: 10, mins: 140,
+      week: 11, mins: 140,
       summary: 'Factory, Builder, Singleton. Object creation, made flexible.',
       blocks: [
         { k: 'code', lang: 'java', cap: 'Factory — pick the implementation at runtime', src: `interface NotificationSender { void send(String to, String body); }
@@ -327,7 +327,7 @@ abstract class DataImporter {
     {
       id: 'lld-structural',
       name: 'Structural patterns',
-      week: 11, mins: 110,
+      week: 13, mins: 110,
       summary: 'Decorator, Adapter, Facade. Composing objects rather than inheriting.',
       blocks: [
         { k: 'code', lang: 'java', cap: 'Decorator — wrap to add behaviour', src: `interface Coffee { BigDecimal cost(); String description(); }
@@ -399,7 +399,7 @@ class OrderFacade {
     {
       id: 'mc-parking-lot',
       name: 'Machine coding — Parking Lot',
-      week: 12, mins: 180, tag: 'core',
+      week: 13, mins: 180, tag: 'core',
       summary: 'The most-asked machine coding problem. Do this one first.',
       blocks: [
         { k: 'list', title: 'Clarify first (say these out loud)', items: [
@@ -621,7 +621,7 @@ List<Transfer> simplify(Map<String, BigDecimal> netBalances) {
     {
       id: 'mc-lru-cache',
       name: 'Machine coding — LRU Cache',
-      week: 11, mins: 140, tag: 'core',
+      week: 14, mins: 140, tag: 'core',
       summary: 'HashMap plus doubly linked list. Asked in both DSA and LLD rounds.',
       blocks: [
         { k: 'p', body: [
@@ -700,7 +700,7 @@ List<Transfer> simplify(Map<String, BigDecimal> netBalances) {
     {
       id: 'mc-rate-limiter',
       name: 'Machine coding — Rate Limiter',
-      week: 15, mins: 160, tag: 'core',
+      week: 16, mins: 160, tag: 'core',
       summary: 'Four algorithms, and knowing which one to pick. Also a system design favourite.',
       blocks: [
         { k: 'table', title: 'The four algorithms', head: ['Algorithm', 'How', 'Trade-off'], rows: [
@@ -774,7 +774,7 @@ class RateLimiterService {
     {
       id: 'mc-elevator',
       name: 'Machine coding — Elevator system',
-      week: 18, mins: 170,
+      week: 16, mins: 170,
       summary: 'State machines and scheduling. Tests modelling under genuine ambiguity.',
       blocks: [
         { k: 'list', title: 'Clarify first', items: [
@@ -864,7 +864,7 @@ class ElevatorController {
     {
       id: 'mc-others',
       name: 'Machine coding — four more, sketched',
-      week: 16, mins: 200,
+      week: 17, mins: 200,
       summary: 'Logger, notification service, tic-tac-toe, vending machine. The models, not full code.',
       blocks: [
         { k: 'code', lang: 'java', cap: 'Logging framework — Chain of Responsibility', src: `enum LogLevel { DEBUG, INFO, WARN, ERROR }

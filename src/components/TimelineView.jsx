@@ -5,9 +5,20 @@ import { allTopics } from '../content/index.js'
 import Inline from './Inline.jsx'
 
 /**
- * The per-week topic list is derived from the content itself, so the schedule
- * can never drift out of sync with what is actually written.
+ * Everything per-week is derived from the content itself, so the schedule can
+ * never drift out of sync with what is actually written. Only phase names,
+ * goals and milestones are hand-authored in timeline.js.
+ *
+ * The three lanes mirror how the week is actually spent: problems in the
+ * protected morning hours, depth in low-energy evening reading, design and
+ * voice at weekends.
  */
+const LANES = [
+  { key: 'dsa', label: 'Problems', sections: ['dsa', 'complexity'] },
+  { key: 'depth', label: 'Depth', sections: ['java', 'javaversions', 'spring', 'database', 'messaging', 'cloud'] },
+  { key: 'design', label: 'Design & voice', sections: ['lld', 'hld', 'frontend', 'interview', 'start'] },
+]
+
 function useSchedule() {
   return useMemo(() => {
     const map = new Map()
@@ -19,17 +30,16 @@ function useSchedule() {
   }, [])
 }
 
-function WeekTopics({ topics }) {
+function laneTopics(topics, lane) {
+  return (topics || []).filter((t) => lane.sections.includes(t.sectionId))
+}
+
+function WeekHours({ topics }) {
   if (!topics || topics.length === 0) return null
   const hours = Math.round((topics.reduce((s, t) => s + t.mins, 0) / 60) * 10) / 10
   return (
     <div className="wk-topics">
       <span className="wk-topics-lbl">{topics.length} topics · ≈{hours}h</span>
-      {topics.map((t) => (
-        <Link className="wk-chip" to={`/t/${t.id}`} key={t.id} title={t.sectionName}>
-          {t.name}
-        </Link>
-      ))}
     </div>
   )
 }
@@ -75,25 +85,30 @@ export function TimelineView() {
           {phase.weeks.map((w) => (
             <div className="wk" key={w.n}>
               <div className="wk-no">WEEK {String(w.n).padStart(2, '0')}</div>
-              <div className="wk-lane">
-                <span className="wk-tag">Problems</span>
-                <p><Inline text={w.dsa} /></p>
-              </div>
-              <div className="wk-lane">
-                <span className="wk-tag">Depth</span>
-                <p><Inline text={w.depth} /></p>
-              </div>
-              <div className="wk-lane">
-                <span className="wk-tag">Design &amp; voice</span>
-                <p><Inline text={w.design} /></p>
-              </div>
+              {LANES.map((lane) => {
+                const items = laneTopics(schedule.get(w.n), lane)
+                return (
+                  <div className="wk-lane" key={lane.key}>
+                    <span className="wk-tag">{lane.label}</span>
+                    {items.length === 0 ? (
+                      <p className="faint">—</p>
+                    ) : (
+                      items.map((t) => (
+                        <Link className="wk-topic" to={`/t/${t.id}`} key={t.id}>
+                          {t.name}
+                        </Link>
+                      ))
+                    )}
+                  </div>
+                )
+              })}
               {w.mile && (
                 <div className="wk-mile">
                   <span className="mk">{w.mile.tag}</span>
                   <span><Inline text={w.mile.text} /></span>
                 </div>
               )}
-              <WeekTopics topics={schedule.get(w.n)} />
+              <WeekHours topics={schedule.get(w.n)} />
             </div>
           ))}
         </section>

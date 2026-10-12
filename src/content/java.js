@@ -96,9 +96,60 @@ class Order {
       ],
     },
     {
+      id: 'java-equals-hashcode',
+      name: 'equals() & hashCode()',
+      week: 1, mins: 120, tag: 'core',
+      summary: 'The contract, why it exists, and what breaks when you get it wrong.',
+      blocks: [
+        { k: 'p', title: 'The contract', body: [
+          '**1.** If `a.equals(b)` then `a.hashCode() == b.hashCode()`. Mandatory. **2.** If hash codes are equal, objects may or may not be equal — collisions are allowed. **3.** Both must be consistent: same object, same answers, unless the fields used change.',
+          'Rule 1 is the one people break, and the failure is silent and baffling: objects disappear into HashMaps and HashSets.',
+        ]},
+        { k: 'code', lang: 'java', cap: 'The failure, then the fix', src: `// BROKEN: equals overridden, hashCode not.
+class User {
+    private final String email;
+    User(String email) { this.email = email; }
+
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        return email.equals(((User) o).email);
+    }
+    // no hashCode! -> inherits Object's identity hash
+}
+
+Set<User> set = new HashSet<>();
+set.add(new User("a@b.com"));
+set.contains(new User("a@b.com"));   // FALSE. Different bucket entirely.
+
+// FIXED
+class UserFixed {
+    private final String email;
+    UserFixed(String email) { this.email = email; }
+
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return Objects.equals(email, ((UserFixed) o).email);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(email);      // same fields as equals. Always.
+    }
+}
+
+// BEST for a value type: a record generates both correctly, for free.
+record UserRecord(String email, String name) { }` },
+        { k: 'note', tone: 'tip', title: 'The rule that prevents every bug here', body: 'Use **exactly the same fields** in `equals` and `hashCode`, and make those fields **final**. If you cannot make them final, do not use the class as a map key. Better still, use a `record` for value types and let the compiler write both.' },
+        { k: 'qa', title: 'Asked in interviews', items: [
+          { q: 'Why is it legal for unequal objects to share a hashCode?', a: 'Because hashCode returns an `int` — about 4 billion values — while there are unlimited possible objects. Collisions are mathematically unavoidable, so the map handles them with `equals()` inside the bucket. The contract only forbids the reverse: equal objects with different hash codes, because those would land in different buckets and never be compared.' },
+          { q: 'Is `getClass() != o.getClass()` or `instanceof` correct in equals?', a: '`getClass()` is stricter and keeps the symmetry requirement intact when subclasses exist — a Point and a ColouredPoint are never equal. `instanceof` allows a subclass to equal its parent, which breaks symmetry if the subclass adds fields to equals. Use `getClass()` unless you have a specific reason, and be ready to explain the symmetry problem.' },
+        ]},
+      ],
+    },
+    {
       id: 'java-hashmap-internals',
       name: 'HashMap internals — and building one',
-      week: 2, mins: 220, tag: 'core',
+      week: 3, mins: 220, tag: 'core',
       summary: 'The most asked Java internals question. Write a working one from scratch and it stops being memorisation.',
       blocks: [
         { k: 'p', title: 'What actually happens on put()', body: [
@@ -217,57 +268,6 @@ class BadKey {
           { q: 'What happens if two keys have the same hashCode?', a: 'They land in the same bucket. `equals()` is then used to distinguish them. If `equals()` also says they are equal, the second put **replaces** the first value. If not, both are stored in that bucket — as a list, or as a red-black tree once the bucket reaches 8 entries.' },
           { q: 'Why is HashMap capacity always a power of two?', a: 'So the bucket index can be computed as `hash & (capacity - 1)` — a single bitwise AND — instead of the much slower `hash % capacity`. It only works because subtracting one from a power of two gives a mask of all-ones in the low bits.' },
           { q: 'What happens if you mutate a key after putting it in a map?', a: 'Its `hashCode` changes, so lookups compute a different bucket and the entry becomes unreachable — it is in the map, `size()` counts it, but `get()` returns null and it will never be garbage collected. This is why map keys should be **immutable**, and why `String` being immutable makes it the ideal key.' },
-        ]},
-      ],
-    },
-    {
-      id: 'java-equals-hashcode',
-      name: 'equals() & hashCode()',
-      week: 1, mins: 120, tag: 'core',
-      summary: 'The contract, why it exists, and what breaks when you get it wrong.',
-      blocks: [
-        { k: 'p', title: 'The contract', body: [
-          '**1.** If `a.equals(b)` then `a.hashCode() == b.hashCode()`. Mandatory. **2.** If hash codes are equal, objects may or may not be equal — collisions are allowed. **3.** Both must be consistent: same object, same answers, unless the fields used change.',
-          'Rule 1 is the one people break, and the failure is silent and baffling: objects disappear into HashMaps and HashSets.',
-        ]},
-        { k: 'code', lang: 'java', cap: 'The failure, then the fix', src: `// BROKEN: equals overridden, hashCode not.
-class User {
-    private final String email;
-    User(String email) { this.email = email; }
-
-    @Override public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
-        return email.equals(((User) o).email);
-    }
-    // no hashCode! -> inherits Object's identity hash
-}
-
-Set<User> set = new HashSet<>();
-set.add(new User("a@b.com"));
-set.contains(new User("a@b.com"));   // FALSE. Different bucket entirely.
-
-// FIXED
-class UserFixed {
-    private final String email;
-    UserFixed(String email) { this.email = email; }
-
-    @Override public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        return Objects.equals(email, ((UserFixed) o).email);
-    }
-    @Override public int hashCode() {
-        return Objects.hash(email);      // same fields as equals. Always.
-    }
-}
-
-// BEST for a value type: a record generates both correctly, for free.
-record UserRecord(String email, String name) { }` },
-        { k: 'note', tone: 'tip', title: 'The rule that prevents every bug here', body: 'Use **exactly the same fields** in `equals` and `hashCode`, and make those fields **final**. If you cannot make them final, do not use the class as a map key. Better still, use a `record` for value types and let the compiler write both.' },
-        { k: 'qa', title: 'Asked in interviews', items: [
-          { q: 'Why is it legal for unequal objects to share a hashCode?', a: 'Because hashCode returns an `int` — about 4 billion values — while there are unlimited possible objects. Collisions are mathematically unavoidable, so the map handles them with `equals()` inside the bucket. The contract only forbids the reverse: equal objects with different hash codes, because those would land in different buckets and never be compared.' },
-          { q: 'Is `getClass() != o.getClass()` or `instanceof` correct in equals?', a: '`getClass()` is stricter and keeps the symmetry requirement intact when subclasses exist — a Point and a ColouredPoint are never equal. `instanceof` allows a subclass to equal its parent, which breaks symmetry if the subclass adds fields to equals. Use `getClass()` unless you have a specific reason, and be ready to explain the symmetry problem.' },
         ]},
       ],
     },
@@ -407,7 +407,7 @@ User user = findByEmail(email)
     {
       id: 'java-exceptions',
       name: 'Exceptions',
-      week: 5, mins: 110,
+      week: 6, mins: 110,
       summary: 'Checked vs unchecked, and the handling patterns that survive code review.',
       blocks: [
         { k: 'table', title: 'The hierarchy', head: ['Type', 'Extends', 'Checked?', 'Meaning'], rows: [
@@ -447,7 +447,7 @@ class InsufficientFundsException extends RuntimeException {
     {
       id: 'java-immutability',
       name: 'Immutability & records',
-      week: 5, mins: 100,
+      week: 6, mins: 100,
       summary: 'Why immutable objects remove entire categories of bug.',
       blocks: [
         { k: 'p', body: [
@@ -490,7 +490,7 @@ record Money2(BigDecimal amount, String currency) {
     {
       id: 'java-threads',
       name: 'Threads & the executor framework',
-      week: 6, mins: 180, tag: 'core',
+      week: 7, mins: 180, tag: 'core',
       summary: 'Never create threads manually. Use pools, and know why.',
       blocks: [
         { k: 'p', body: [
@@ -612,7 +612,7 @@ latch.await();            // main thread waits for all three` },
     {
       id: 'java-completable-future',
       name: 'CompletableFuture',
-      week: 8, mins: 140,
+      week: 7, mins: 140,
       summary: 'Async composition without blocking. Very common in microservice code.',
       blocks: [
         { k: 'p', body: [

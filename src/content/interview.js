@@ -52,6 +52,76 @@ EDUCATION  (one line — it is 6 years ago, it does not matter now)
       ],
     },
     {
+      id: 'iv-applications',
+      name: 'Applications & the process',
+      week: 14, mins: 100,
+      summary: 'When to apply, in what order, and how to run parallel processes.',
+      blocks: [
+        { k: 'note', tone: 'warn', title: 'Apply from Week 14, not Week 26', body: 'Interview cycles run four to eight weeks. If you wait until you feel ready you will be signing in month eleven. Week 14 is late enough that the feedback is informative and early enough that it still changes what you study. Early interviews are free, precise diagnostics — far more honest than self-assessment.' },
+        { k: 'list', ordered: true, title: 'The sequence', items: [
+          '**Week 14** — resume out. Ask five people directly for referrals.',
+          '**Week 16** — two interviews at companies you do **not** want. You will do badly. That is the deliverable.',
+          '**Weeks 17–19** — patch exactly what those rounds exposed. Keep applying to the second tier.',
+          '**Week 20** — apply to the companies you actually want, in a batch, so offers land together.',
+          '**Weeks 23–26** — onsites, then negotiate with two offers in hand.',
+        ]},
+        { k: 'table', title: 'Channels, by conversion rate', head: ['Channel', 'Response rate', 'Note'], rows: [
+          ['**Referral**', 'Highest by a distance', 'Ask directly. Most people say yes; most people are never asked.'],
+          ['Recruiter reaching out on LinkedIn', 'High', 'Keep your LinkedIn current and set "open to work" privately'],
+          ['Direct on the company careers page', 'Medium', 'Better than aggregators'],
+          ['Naukri / Instahyre / Cutshort', 'Medium', 'Volume play; good for the warm-up tier'],
+          ['Cold application via a job board', 'Lowest', 'Use only as a fallback'],
+        ]},
+        { k: 'code', lang: 'text', cap: 'The referral message that works', src: `Hi <name>,
+
+I'm a backend engineer with <N> years in Java and Spring Boot, currently
+at <company>. I saw <company> is hiring for <role> (<req id>) and it lines
+up well with what I've been doing — <one specific relevant thing>.
+
+Would you be open to referring me? Happy to send my resume, and no
+problem at all if you'd rather not.
+
+Thanks,
+<name>
+
+# Short. Specific. An easy exit. Attach the resume only if they say yes.` },
+        { k: 'note', tone: 'tip', title: 'Compress the timelines deliberately', body: 'Tell every recruiter you are in late stages elsewhere and ask to align schedules. This is completely normal and they will accommodate it. **Overlapping offers are the whole game** — one offer means you accept whatever you are handed.' },
+      ],
+    },
+    {
+      id: 'iv-mocks',
+      name: 'Mock interviews & tracking',
+      week: 17, mins: 90,
+      summary: 'How to run them so they are actually useful, and what to track.',
+      blocks: [
+        { k: 'list', title: 'Running a mock properly', items: [
+          '**Weekly from Week 17, without exception.** interviewing.io peer mocks and Pramp are both free.',
+          '**Camera on, timer running, no pausing.** A mock you can pause is study, not a mock.',
+          '**Record it.** Watching yourself back is uncomfortable and is where most of the value is.',
+          '**Ask for one specific criticism**, not general feedback. "What was the weakest part of my communication?" gets a useful answer; "how did I do?" gets "pretty good".',
+          '**Write a post-mortem within an hour** — what went wrong, what you will change, what to study this week.',
+        ]},
+        { k: 'code', lang: 'text', cap: 'The post-mortem template — use it after every real round too', src: `Company / Round / Date:
+Problem or topic:
+
+What went well:
+
+What went badly:
+
+The exact moment I got stuck, and why:
+
+What I would say differently:
+
+What I need to study this week because of this:
+  1.
+  2.
+
+Verdict guess (pass / borderline / fail) — and was I right?` },
+        { k: 'note', tone: 'tip', title: 'The four numbers to track weekly', body: '**New problems solved. Problems re-solved. Hours logged. Journal pages written.** Nothing else — a tracker that takes more than a minute becomes another thing to abandon. Use the notes box on each topic page in this app for the journal, and tick topics complete as you go; the progress bars do the counting for you.' },
+        { k: 'note', tone: 'warn', title: 'Rejections are data, not verdicts', body: 'You will be rejected, probably several times, and often for reasons that have nothing to do with you — headcount froze, someone internal applied, the panel wanted a different specialism. Ask for feedback every time (about a third of companies give something useful). Then write the post-mortem, patch the one specific gap, and move to the next. Six weeks of that loop is what moves a candidate from the bottom of a band to the top of it.' },
+      ],
+    },
+    {
       id: 'iv-six-answers',
       name: 'The six answers',
       week: 23, mins: 150, tag: 'core',
@@ -165,43 +235,6 @@ R  "p99 went to 240ms, better than before the sale. I also added an
       ],
     },
     {
-      id: 'iv-applications',
-      name: 'Applications & the process',
-      week: 14, mins: 100,
-      summary: 'When to apply, in what order, and how to run parallel processes.',
-      blocks: [
-        { k: 'note', tone: 'warn', title: 'Apply from Week 14, not Week 26', body: 'Interview cycles run four to eight weeks. If you wait until you feel ready you will be signing in month eleven. Week 14 is late enough that the feedback is informative and early enough that it still changes what you study. Early interviews are free, precise diagnostics — far more honest than self-assessment.' },
-        { k: 'list', ordered: true, title: 'The sequence', items: [
-          '**Week 14** — resume out. Ask five people directly for referrals.',
-          '**Week 16** — two interviews at companies you do **not** want. You will do badly. That is the deliverable.',
-          '**Weeks 17–19** — patch exactly what those rounds exposed. Keep applying to the second tier.',
-          '**Week 20** — apply to the companies you actually want, in a batch, so offers land together.',
-          '**Weeks 23–26** — onsites, then negotiate with two offers in hand.',
-        ]},
-        { k: 'table', title: 'Channels, by conversion rate', head: ['Channel', 'Response rate', 'Note'], rows: [
-          ['**Referral**', 'Highest by a distance', 'Ask directly. Most people say yes; most people are never asked.'],
-          ['Recruiter reaching out on LinkedIn', 'High', 'Keep your LinkedIn current and set "open to work" privately'],
-          ['Direct on the company careers page', 'Medium', 'Better than aggregators'],
-          ['Naukri / Instahyre / Cutshort', 'Medium', 'Volume play; good for the warm-up tier'],
-          ['Cold application via a job board', 'Lowest', 'Use only as a fallback'],
-        ]},
-        { k: 'code', lang: 'text', cap: 'The referral message that works', src: `Hi <name>,
-
-I'm a backend engineer with <N> years in Java and Spring Boot, currently
-at <company>. I saw <company> is hiring for <role> (<req id>) and it lines
-up well with what I've been doing — <one specific relevant thing>.
-
-Would you be open to referring me? Happy to send my resume, and no
-problem at all if you'd rather not.
-
-Thanks,
-<name>
-
-# Short. Specific. An easy exit. Attach the resume only if they say yes.` },
-        { k: 'note', tone: 'tip', title: 'Compress the timelines deliberately', body: 'Tell every recruiter you are in late stages elsewhere and ask to align schedules. This is completely normal and they will accommodate it. **Overlapping offers are the whole game** — one offer means you accept whatever you are handed.' },
-      ],
-    },
-    {
       id: 'iv-negotiation',
       name: 'Negotiation',
       week: 25, mins: 100, tag: 'core',
@@ -238,39 +271,6 @@ Thanks,
           ['Gratuity, PF', 'Included in CTC but not in your take-home. Adjust mentally.'],
         ]},
         { k: 'note', tone: 'trap', title: 'The counter-offer from your current employer', body: 'When you resign, there is a good chance your current company offers more to keep you. The data on this is unambiguous: most people who accept a counter-offer leave within a year anyway, and the reasons you were leaving — scale, growth, the work itself — are still there. The money arrived because you threatened to leave, which tells you what it would have taken otherwise. Decide *before* you resign that you will decline it, so you are not deciding under pressure.' },
-      ],
-    },
-    {
-      id: 'iv-mocks',
-      name: 'Mock interviews & tracking',
-      week: 17, mins: 90,
-      summary: 'How to run them so they are actually useful, and what to track.',
-      blocks: [
-        { k: 'list', title: 'Running a mock properly', items: [
-          '**Weekly from Week 17, without exception.** interviewing.io peer mocks and Pramp are both free.',
-          '**Camera on, timer running, no pausing.** A mock you can pause is study, not a mock.',
-          '**Record it.** Watching yourself back is uncomfortable and is where most of the value is.',
-          '**Ask for one specific criticism**, not general feedback. "What was the weakest part of my communication?" gets a useful answer; "how did I do?" gets "pretty good".',
-          '**Write a post-mortem within an hour** — what went wrong, what you will change, what to study this week.',
-        ]},
-        { k: 'code', lang: 'text', cap: 'The post-mortem template — use it after every real round too', src: `Company / Round / Date:
-Problem or topic:
-
-What went well:
-
-What went badly:
-
-The exact moment I got stuck, and why:
-
-What I would say differently:
-
-What I need to study this week because of this:
-  1.
-  2.
-
-Verdict guess (pass / borderline / fail) — and was I right?` },
-        { k: 'note', tone: 'tip', title: 'The four numbers to track weekly', body: '**New problems solved. Problems re-solved. Hours logged. Journal pages written.** Nothing else — a tracker that takes more than a minute becomes another thing to abandon. Use the notes box on each topic page in this app for the journal, and tick topics complete as you go; the progress bars do the counting for you.' },
-        { k: 'note', tone: 'warn', title: 'Rejections are data, not verdicts', body: 'You will be rejected, probably several times, and often for reasons that have nothing to do with you — headcount froze, someone internal applied, the panel wanted a different specialism. Ask for feedback every time (about a third of companies give something useful). Then write the post-mortem, patch the one specific gap, and move to the next. Six weeks of that loop is what moves a candidate from the bottom of a band to the top of it.' },
       ],
     },
   ],

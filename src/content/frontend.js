@@ -3,12 +3,12 @@ export const frontend = {
   name: 'Frontend — HTML, CSS, JS & React',
   icon: '◧',
   blurb: 'A brush-up for a backend-leaning engineer with real frontend history. Depth where it is asked — the event loop, closures, rendering, hooks — not a beginner tutorial.',
-  weeks: 'Weeks 2–24 (light, alongside)',
+  weeks: 'Weeks 3–9 (light, alongside)',
   topics: [
     {
       id: 'fe-html',
       name: 'HTML — semantics & accessibility',
-      week: 2, mins: 90,
+      week: 3, mins: 90,
       summary: 'The part that separates someone who writes divs from someone who writes markup.',
       blocks: [
         { k: 'p', body: [
@@ -172,7 +172,7 @@ style="..."          /* 1,0,0,0 */
     {
       id: 'fe-css-responsive',
       name: 'CSS — responsive & modern layout',
-      week: 2, mins: 100,
+      week: 3, mins: 100,
       summary: 'Mobile-first, units that actually work, and the modern features worth using.',
       blocks: [
         { k: 'code', lang: 'javascript', cap: 'Mobile-first media queries', src: `/* Write the MOBILE styles first, unconditionally.
@@ -324,7 +324,7 @@ class Button {
     {
       id: 'fe-js-async',
       name: 'JavaScript — the event loop & async',
-      week: 6, mins: 150, tag: 'core',
+      week: 5, mins: 150, tag: 'core',
       summary: 'How single-threaded JavaScript does concurrency. Guaranteed question.',
       blocks: [
         { k: 'p', body: [
@@ -399,7 +399,7 @@ const withTimeout = (p, ms) => Promise.race([
     {
       id: 'fe-js-modern',
       name: 'JavaScript — ES6+ and the bits you use daily',
-      week: 7, mins: 110,
+      week: 6, mins: 110,
       summary: 'Destructuring, spread, optional chaining, modules, and the equality rules.',
       blocks: [
         { k: 'code', lang: 'javascript', cap: 'Destructuring and spread', src: `// Object destructuring, with renaming and defaults
@@ -473,7 +473,7 @@ cache.set(objKey, value);` },
     {
       id: 'fe-dom-events',
       name: 'The DOM & event handling',
-      week: 8, mins: 90,
+      week: 6, mins: 90,
       summary: 'Bubbling, delegation, and why frameworks exist.',
       blocks: [
         { k: 'code', lang: 'javascript', cap: 'Event propagation — three phases', src: `// A click travels: CAPTURE (window -> target), then TARGET,
@@ -513,7 +513,7 @@ document.querySelector('#table').addEventListener('click', (e) => {
     {
       id: 'fe-react-core',
       name: 'React — components, JSX & state basics',
-      week: 19, mins: 120, tag: 'core',
+      week: 7, mins: 120, tag: 'core',
       summary: 'The mental model: UI as a function of state.',
       blocks: [
         { k: 'code', lang: 'javascript', cap: 'The fundamentals', src: `// A component is a function that takes props and returns JSX.
@@ -571,7 +571,7 @@ const total = items2.reduce((s, i) => s + i.price, 0);   // no useState needed` 
     {
       id: 'fe-react-hooks',
       name: 'React — hooks in depth',
-      week: 22, mins: 170, tag: 'core',
+      week: 8, mins: 170, tag: 'core',
       summary: 'useEffect properly, the memo hooks, refs, and writing your own.',
       blocks: [
         { k: 'code', lang: 'javascript', cap: 'useEffect — dependencies and cleanup', src: `// Runs AFTER render. The dependency array controls when.
@@ -668,7 +668,7 @@ function useDebounced(value, delay = 300) {
     {
       id: 'fe-react-rendering',
       name: 'React — rendering, reconciliation & performance',
-      week: 23, mins: 140,
+      week: 9, mins: 140,
       summary: 'What actually causes a re-render, and how to stop the unnecessary ones.',
       blocks: [
         { k: 'p', title: 'What triggers a re-render', body: [
@@ -732,7 +732,7 @@ const Dashboard = React.lazy(() => import('./Dashboard'));
     {
       id: 'fe-react-state-mgmt',
       name: 'React — state management & data fetching',
-      week: 23, mins: 120,
+      week: 9, mins: 120,
       summary: 'Context, Redux Toolkit, and the server-state distinction that changed everything.',
       blocks: [
         { k: 'p', title: 'The distinction that simplifies most decisions', body: [
@@ -794,7 +794,7 @@ useEffect(() => { dispatch(fetchOrders(userId)); }, [dispatch, userId]);` },
     {
       id: 'fe-interview',
       name: 'Frontend interview questions & full-stack framing',
-      week: 24, mins: 100,
+      week: 9, mins: 100,
       summary: 'What actually gets asked, and how to position frontend as a backend-leaning candidate.',
       blocks: [
         { k: 'qa', title: 'JavaScript', items: [

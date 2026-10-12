@@ -3,12 +3,12 @@ export const database = {
   name: 'Databases & SQL',
   icon: '⛁',
   blurb: 'Consistently underestimated and consistently tested. Joins, window functions, indexes, execution plans, isolation levels and locking.',
-  weeks: 'Weeks 12–16 (evenings)',
+  weeks: 'Weeks 11–16 (evenings)',
   topics: [
     {
       id: 'db-joins',
       name: 'Joins',
-      week: 12, mins: 140, tag: 'core',
+      week: 11, mins: 140, tag: 'core',
       summary: 'The four joins, drawn properly, plus the self-join everyone forgets.',
       blocks: [
         { k: 'table', title: 'The four', head: ['Join', 'Returns'], rows: [
@@ -56,7 +56,7 @@ LEFT JOIN orders o ON o.customer_id = c.id
     {
       id: 'db-aggregation',
       name: 'GROUP BY, HAVING & subqueries',
-      week: 14, mins: 130,
+      week: 12, mins: 130,
       summary: 'Aggregation, and the WHERE/HAVING distinction that gets tested every time.',
       blocks: [
         { k: 'code', lang: 'sql', cap: 'Order of operations matters', src: `-- Departments with more than 5 employees earning over 50k on average
@@ -105,7 +105,7 @@ SELECT * FROM org ORDER BY level;` },
     {
       id: 'db-window-functions',
       name: 'Window functions',
-      week: 15, mins: 150, tag: 'core',
+      week: 13, mins: 150, tag: 'core',
       summary: 'Ranking and running totals without collapsing rows. The senior SQL signal.',
       blocks: [
         { k: 'p', body: [
@@ -212,7 +212,7 @@ CREATE UNIQUE INDEX idx_email ON users(LOWER(email));` },
     {
       id: 'db-explain',
       name: 'Execution plans',
-      week: 15, mins: 140,
+      week: 14, mins: 140,
       summary: 'Reading EXPLAIN. The skill that answers "why is this query slow?"',
       blocks: [
         { k: 'code', lang: 'sql', cap: 'Reading a plan', src: `EXPLAIN ANALYZE

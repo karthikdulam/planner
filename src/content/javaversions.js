@@ -32,7 +32,7 @@ export const javaversions = {
     {
       id: 'jv-java8',
       name: 'Java 8 — the version that changed the language',
-      week: 3, mins: 200, tag: 'core',
+      week: 2, mins: 200, tag: 'core',
       summary: 'Lambdas, streams, Optional, default methods, java.time. Still the single most-asked version.',
       blocks: [
         { k: 'p', body: [
@@ -434,7 +434,7 @@ map.reversed();` },
     {
       id: 'jv-java22-25',
       name: 'Java 22–25 — what has landed since',
-      week: 8, mins: 90,
+      week: 9, mins: 90,
       summary: 'Recent additions. Worth recognising; nobody will fail you for not using them yet.',
       blocks: [
         { k: 'code', lang: 'java', cap: 'Stream gatherers — custom intermediate operations', src: `// Streams always had a fixed set of intermediate ops. Gatherers let you

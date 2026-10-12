@@ -3,12 +3,12 @@ export const cloud = {
   name: 'Cloud & DevOps',
   icon: '☁',
   blurb: 'Enough to actually deploy and operate a service you wrote — containerise it, ship it, watch it, debug it in production. Practical depth, not certification trivia.',
-  weeks: 'Weeks 20–22 (evenings)',
+  weeks: 'Weeks 18–22 (evenings)',
   topics: [
     {
       id: 'cloud-fundamentals',
       name: 'Cloud fundamentals',
-      week: 20, mins: 90,
+      week: 18, mins: 90,
       summary: 'The vocabulary, the service models, and regions vs availability zones.',
       blocks: [
         { k: 'table', title: 'The service models', head: ['Model', 'You manage', 'Example'], rows: [
@@ -29,7 +29,7 @@ export const cloud = {
     {
       id: 'cloud-aws-core',
       name: 'AWS — the services you must recognise',
-      week: 22, mins: 130,
+      week: 20, mins: 130,
       summary: 'What each service is for and when you would reach for it, so you can pick a stack and defend the choice.',
       blocks: [
         { k: 'table', title: 'Compute', head: ['Service', 'What it is', 'When to reach for it'], rows: [
@@ -65,7 +65,7 @@ export const cloud = {
     {
       id: 'cloud-docker',
       name: 'Docker',
-      week: 20, mins: 110, tag: 'core',
+      week: 21, mins: 110, tag: 'core',
       summary: 'Containerise your own Spring Boot service. Two days of work, permanently useful.',
       blocks: [
         { k: 'p', body: [
@@ -139,7 +139,7 @@ volumes:
     {
       id: 'cloud-k8s-cicd',
       name: 'Kubernetes & CI/CD',
-      week: 21, mins: 130,
+      week: 22, mins: 130,
       summary: 'Enough to deploy your own service, read a manifest, and debug a pod that will not start.',
       blocks: [
         { k: 'table', title: 'Kubernetes vocabulary', head: ['Object', 'What it is'], rows: [

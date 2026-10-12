@@ -146,7 +146,7 @@ Arrays.stream(a).filter(x -> x > 5).findFirst(); // linear, lazy` },
     {
       id: 'dsa-prefix-sum',
       name: 'Prefix sums',
-      week: 2, mins: 150,
+      week: 1, mins: 150,
       summary: 'Precompute once, then answer any range-sum question in O(1).',
       blocks: [
         { k: 'p', body: [
@@ -189,72 +189,6 @@ int subarraySum(int[] a, int k) {
           '**2-D prefix sums** — for rectangle sums in a matrix. Same idea, inclusion-exclusion on four corners.',
           '**Difference array** — the inverse: range *updates* in O(1), one final pass to materialise.',
         ]},
-      ],
-    },
-    /* ---------------------------------------------------------------- */
-    {
-      id: 'dsa-cyclic-sort',
-      name: 'Cyclic sort',
-      week: 2, mins: 130,
-      summary: 'When the values are 1..n, the value tells you where it belongs. Solves a whole family of "find the missing number" problems in O(n) time, O(1) space.',
-      blocks: [
-        { k: 'p', body: [
-          'A small, very recognisable pattern. Whenever the input is **n numbers drawn from the range 1..n** (or 0..n-1), each value has a natural home index — and you can sort by repeatedly swapping each value to its home in one pass.',
-          'The payoff is that "find the missing number", "find the duplicate", "find all missing" and "find the first positive missing" all collapse to: sort cyclically, then scan for the first index whose value is wrong.',
-        ]},
-        { k: 'analogy', body: 'A cloakroom where every coat has its own numbered peg. You pick up whatever coat is in front of you, walk it to its own peg, and pick up whatever was already hanging there. Repeat. Every coat is moved at most once, and when you stop, any empty peg is a missing coat.' },
-        { k: 'code', lang: 'java', cap: 'The pattern itself', src: `// Values are 1..n, so value v belongs at index v-1.
-void cyclicSort(int[] a) {
-    int i = 0;
-    while (i < a.length) {
-        int home = a[i] - 1;                 // where a[i] SHOULD live
-        if (a[i] != a[home]) {
-            swap(a, i, home);                // send it home, do NOT advance
-        } else {
-            i++;                              // already correct (or a duplicate)
-        }
-    }
-}
-// Note: compare a[i] != a[home], NOT i != home. Comparing VALUES makes it
-// terminate correctly when duplicates exist — otherwise two equal values
-// bounce forever.` },
-        { k: 'cx', time: 'O(n)', space: 'O(1)', why: 'The while loop looks like it could repeat, but every swap places at least one value permanently at its home, so there are at most n swaps in total plus n index advances.' },
-        { k: 'code', lang: 'java', cap: 'The four problems it unlocks', src: `// 1. MISSING NUMBER (0..n, one missing)
-int missingNumber(int[] a) {
-    cyclicSort(a);
-    for (int i = 0; i < a.length; i++) if (a[i] != i + 1) return i + 1;
-    return a.length + 1;
-}
-
-// 2. FIND THE DUPLICATE (n+1 numbers in 1..n)
-int findDuplicate(int[] a) {
-    cyclicSort(a);
-    for (int i = 0; i < a.length; i++) if (a[i] != i + 1) return a[i];
-    return -1;
-}
-
-// 3. ALL NUMBERS DISAPPEARED
-List<Integer> findDisappeared(int[] a) {
-    cyclicSort(a);
-    List<Integer> out = new ArrayList<>();
-    for (int i = 0; i < a.length; i++) if (a[i] != i + 1) out.add(i + 1);
-    return out;
-}
-
-// 4. FIRST MISSING POSITIVE (the hard one — values can be anything)
-int firstMissingPositive(int[] a) {
-    int n = a.length;
-    int i = 0;
-    while (i < n) {
-        int home = a[i] - 1;
-        // only place values that actually fall in 1..n; ignore the rest
-        if (a[i] > 0 && a[i] <= n && a[i] != a[home]) swap(a, i, home);
-        else i++;
-    }
-    for (int j = 0; j < n; j++) if (a[j] != j + 1) return j + 1;
-    return n + 1;
-}` },
-        { k: 'note', tone: 'tip', title: 'The tell, and the alternatives', body: 'The giveaway is a constraint like **"an array of n integers where each is in the range 1 to n"**. That phrasing is almost never incidental. Two alternatives worth naming: **XOR** (missing number = XOR of all indices XOR all values, O(1) space, but does not extend to duplicates) and **sum formula** (n(n+1)/2 minus the actual sum — elegant, but overflows on large n). Cyclic sort handles the whole family without either caveat.' },
       ],
     },
     /* ---------------------------------------------------------------- */
@@ -324,7 +258,7 @@ boolean isPalindrome(String s) {
     {
       id: 'dsa-sliding-window',
       name: 'Sliding window',
-      week: 3, mins: 260, tag: 'core',
+      week: 2, mins: 260, tag: 'core',
       summary: 'A moving range over the data. The single highest-frequency pattern in interviews.',
       blocks: [
         { k: 'p', body: [
@@ -384,6 +318,72 @@ int longestUnique(String s) {
           { q: 'Both pointers move n times — why is that O(n) and not O(n²)?', a: 'Because they move independently and neither ever goes backwards. `right` advances exactly n times across the whole run; `left` advances at most n times in total across the whole run — not n times per step. Total work is bounded by 2n, so O(n). This is amortised reasoning and stating it correctly is a strong signal.' },
           { q: 'When does sliding window NOT apply?', a: 'When the elements you need are not contiguous (that is usually DP or a heap), or when negative numbers break the invariant. "Minimum subarray sum ≥ target" with negatives cannot use a plain window, because shrinking no longer reliably decreases the sum — you need prefix sums plus a deque instead.' },
         ]},
+      ],
+    },
+    /* ---------------------------------------------------------------- */
+    {
+      id: 'dsa-cyclic-sort',
+      name: 'Cyclic sort',
+      week: 3, mins: 130,
+      summary: 'When the values are 1..n, the value tells you where it belongs. Solves a whole family of "find the missing number" problems in O(n) time, O(1) space.',
+      blocks: [
+        { k: 'p', body: [
+          'A small, very recognisable pattern. Whenever the input is **n numbers drawn from the range 1..n** (or 0..n-1), each value has a natural home index — and you can sort by repeatedly swapping each value to its home in one pass.',
+          'The payoff is that "find the missing number", "find the duplicate", "find all missing" and "find the first positive missing" all collapse to: sort cyclically, then scan for the first index whose value is wrong.',
+        ]},
+        { k: 'analogy', body: 'A cloakroom where every coat has its own numbered peg. You pick up whatever coat is in front of you, walk it to its own peg, and pick up whatever was already hanging there. Repeat. Every coat is moved at most once, and when you stop, any empty peg is a missing coat.' },
+        { k: 'code', lang: 'java', cap: 'The pattern itself', src: `// Values are 1..n, so value v belongs at index v-1.
+void cyclicSort(int[] a) {
+    int i = 0;
+    while (i < a.length) {
+        int home = a[i] - 1;                 // where a[i] SHOULD live
+        if (a[i] != a[home]) {
+            swap(a, i, home);                // send it home, do NOT advance
+        } else {
+            i++;                              // already correct (or a duplicate)
+        }
+    }
+}
+// Note: compare a[i] != a[home], NOT i != home. Comparing VALUES makes it
+// terminate correctly when duplicates exist — otherwise two equal values
+// bounce forever.` },
+        { k: 'cx', time: 'O(n)', space: 'O(1)', why: 'The while loop looks like it could repeat, but every swap places at least one value permanently at its home, so there are at most n swaps in total plus n index advances.' },
+        { k: 'code', lang: 'java', cap: 'The four problems it unlocks', src: `// 1. MISSING NUMBER (0..n, one missing)
+int missingNumber(int[] a) {
+    cyclicSort(a);
+    for (int i = 0; i < a.length; i++) if (a[i] != i + 1) return i + 1;
+    return a.length + 1;
+}
+
+// 2. FIND THE DUPLICATE (n+1 numbers in 1..n)
+int findDuplicate(int[] a) {
+    cyclicSort(a);
+    for (int i = 0; i < a.length; i++) if (a[i] != i + 1) return a[i];
+    return -1;
+}
+
+// 3. ALL NUMBERS DISAPPEARED
+List<Integer> findDisappeared(int[] a) {
+    cyclicSort(a);
+    List<Integer> out = new ArrayList<>();
+    for (int i = 0; i < a.length; i++) if (a[i] != i + 1) out.add(i + 1);
+    return out;
+}
+
+// 4. FIRST MISSING POSITIVE (the hard one — values can be anything)
+int firstMissingPositive(int[] a) {
+    int n = a.length;
+    int i = 0;
+    while (i < n) {
+        int home = a[i] - 1;
+        // only place values that actually fall in 1..n; ignore the rest
+        if (a[i] > 0 && a[i] <= n && a[i] != a[home]) swap(a, i, home);
+        else i++;
+    }
+    for (int j = 0; j < n; j++) if (a[j] != j + 1) return j + 1;
+    return n + 1;
+}` },
+        { k: 'note', tone: 'tip', title: 'The tell, and the alternatives', body: 'The giveaway is a constraint like **"an array of n integers where each is in the range 1 to n"**. That phrasing is almost never incidental. Two alternatives worth naming: **XOR** (missing number = XOR of all indices XOR all values, O(1) space, but does not extend to duplicates) and **sum formula** (n(n+1)/2 minus the actual sum — elegant, but overflows on large n). Cyclic sort handles the whole family without either caveat.' },
       ],
     },
     /* ---------------------------------------------------------------- */
@@ -560,108 +560,6 @@ String reverseWords(String s) {
     },
     /* ---------------------------------------------------------------- */
     {
-      id: 'dsa-pattern-matching',
-      name: 'Pattern matching — KMP & Rabin-Karp',
-      week: 5, mins: 170,
-      summary: 'Finding a substring in O(n + m) instead of O(n × m). The one genuinely clever classical algorithm you should know.',
-      blocks: [
-        { k: 'p', body: [
-          '"Does this text contain this pattern, and where?" The naive approach tries the pattern at every position and rescans on each mismatch — O(n × m). Two algorithms beat it, by exploiting information the naive version throws away.',
-        ]},
-        { k: 'code', lang: 'java', cap: 'Naive — the baseline, and what it wastes', src: `int naiveSearch(String text, String pattern) {
-    int n = text.length(), m = pattern.length();
-    for (int i = 0; i <= n - m; i++) {
-        int j = 0;
-        while (j < m && text.charAt(i + j) == pattern.charAt(j)) j++;
-        if (j == m) return i;
-        // On mismatch we throw away everything we learned and restart
-        // at i+1 — re-comparing characters we have already seen.
-    }
-    return -1;
-}                                            // O(n * m) worst case` },
-        { k: 'p', title: 'KMP — never re-compare what you already matched', body: [
-          'The insight: if you have matched the first `j` characters of the pattern and then mismatch, you already **know** those `j` characters. If the pattern has a prefix that is also a suffix of what you matched, you can slide the pattern forward to that point instead of restarting.',
-          'That information is precomputed once into an **LPS array** (Longest Proper Prefix which is also a Suffix). Then the text pointer never moves backwards — so the whole scan is O(n).',
-        ]},
-        { k: 'code', lang: 'java', cap: 'KMP', src: `// Build the LPS table: lps[i] = length of the longest proper prefix of
-// pattern[0..i] that is also a suffix of it.
-//   pattern:  a  b  a  b  a  c
-//   lps:      0  0  1  2  3  0
-private int[] buildLps(String p) {
-    int[] lps = new int[p.length()];
-    int len = 0;                             // length of the current match
-    int i = 1;
-
-    while (i < p.length()) {
-        if (p.charAt(i) == p.charAt(len)) {
-            lps[i++] = ++len;
-        } else if (len > 0) {
-            len = lps[len - 1];              // fall back, do NOT advance i
-        } else {
-            lps[i++] = 0;
-        }
-    }
-    return lps;
-}
-
-int kmpSearch(String text, String pattern) {
-    if (pattern.isEmpty()) return 0;
-    int[] lps = buildLps(pattern);
-
-    int i = 0, j = 0;                        // i -> text, j -> pattern
-    while (i < text.length()) {
-        if (text.charAt(i) == pattern.charAt(j)) {
-            i++; j++;
-            if (j == pattern.length()) return i - j;    // full match
-        } else if (j > 0) {
-            j = lps[j - 1];                  // slide the pattern, i STAYS
-        } else {
-            i++;
-        }
-    }
-    return -1;
-}` },
-        { k: 'cx', time: 'O(n + m)', space: 'O(m)', why: 'Building the LPS table is O(m). In the search, `i` only ever increases and `j` only decreases when `i` does not move, so total steps are bounded by 2n. Space is the LPS table.' },
-        { k: 'code', lang: 'java', cap: 'Rabin-Karp — compare hashes, not characters', src: `// Hash the pattern once, then roll a hash across the text. Comparing two
-// ints is O(1); only on a hash match do you verify the actual characters.
-int rabinKarp(String text, String pattern) {
-    int n = text.length(), m = pattern.length();
-    if (m > n) return -1;
-
-    final int BASE = 256, MOD = 1_000_000_007;
-
-    long patternHash = 0, windowHash = 0, highestPower = 1;
-    for (int i = 0; i < m - 1; i++) highestPower = (highestPower * BASE) % MOD;
-
-    for (int i = 0; i < m; i++) {
-        patternHash = (patternHash * BASE + pattern.charAt(i)) % MOD;
-        windowHash  = (windowHash  * BASE + text.charAt(i))    % MOD;
-    }
-
-    for (int i = 0; i <= n - m; i++) {
-        // hash match is only a HINT — different strings can share a hash
-        if (patternHash == windowHash && text.startsWith(pattern, i)) return i;
-
-        if (i < n - m) {
-            // ROLL: drop the leftmost char, add the next one. O(1).
-            windowHash = (windowHash - text.charAt(i) * highestPower % MOD + MOD) % MOD;
-            windowHash = (windowHash * BASE + text.charAt(i + m)) % MOD;
-        }
-    }
-    return -1;
-}` },
-        { k: 'table', title: 'Which one', head: ['', 'KMP', 'Rabin-Karp'], rows: [
-          ['Time', 'O(n + m) guaranteed', 'O(n + m) average, O(n × m) worst'],
-          ['Space', 'O(m)', 'O(1)'],
-          ['Strength', 'Worst-case guarantee', '**Multiple patterns at once** — hash them all into a set'],
-          ['Weakness', 'Fiddly to write under pressure', 'Hash collisions force verification'],
-          ['Use for', 'Single pattern, guaranteed bound', 'Plagiarism detection, many patterns, 2-D search'],
-        ]},
-        { k: 'note', tone: 'tip', title: 'What is actually expected', body: 'Being asked to write KMP cold is rare. Being asked *"how would you find a substring faster than brute force"* is not. The strong answer names both, explains the **one-sentence insight** behind each — KMP reuses the matched prefix so the text pointer never backtracks; Rabin-Karp rolls a hash so each window is O(1) to compare — and notes that `String.indexOf` in the JDK actually uses an optimised naive scan, because for short patterns the constants beat the cleverness.' },
-      ],
-    },
-    /* ---------------------------------------------------------------- */
-    {
       id: 'dsa-matrix',
       name: 'Matrix & 2-D arrays',
       week: 5, mins: 160,
@@ -776,110 +674,9 @@ boolean searchMatrixII(int[][] m, int target) {
     },
     /* ---------------------------------------------------------------- */
     {
-      id: 'dsa-binary-search',
-      name: 'Binary search',
-      week: 6, mins: 240, tag: 'core',
-      summary: 'Halve the search space every step. Simple idea, brutal off-by-one traps.',
-      blocks: [
-        { k: 'p', body: [
-          'On sorted data, look at the middle. If it is too small, the answer is to the right and you discard the entire left half. If it is too big, discard the right. Each step halves what remains, so a million items takes twenty steps.',
-          'The idea takes one minute. The implementation takes a week, because the boundary conditions are genuinely fiddly. **Memorise one template and never deviate from it** — this is the one place in DSA where memorisation beats understanding.',
-        ]},
-        { k: 'code', lang: 'java', cap: 'Template 1 — exact match (memorise this exactly)', src: `int search(int[] a, int target) {
-    int lo = 0, hi = a.length - 1;          // hi is INCLUSIVE
-
-    while (lo <= hi) {                       // note: <=
-        int mid = lo + (hi - lo) / 2;        // overflow-safe
-
-        if (a[mid] == target)  return mid;
-        if (a[mid] < target)   lo = mid + 1;
-        else                   hi = mid - 1;
-    }
-    return -1;
-}` },
-        { k: 'code', lang: 'java', cap: 'Template 2 — leftmost / boundary (the one that actually shows up)', src: `// First index where a[i] >= target. Returns a.length if none.
-// This one answers "how many are smaller", "where do I insert",
-// "first bad version", "leftmost occurrence" — all the same shape.
-int lowerBound(int[] a, int target) {
-    int lo = 0, hi = a.length;               // hi is EXCLUSIVE this time
-
-    while (lo < hi) {                         // note: <
-        int mid = lo + (hi - lo) / 2;
-        if (a[mid] < target) lo = mid + 1;    // mid is too small, discard it
-        else                 hi = mid;        // mid might BE the answer, keep it
-    }
-    return lo;                                 // lo == hi == the boundary
-}
-
-// Count of elements equal to target
-int countOf(int[] a, int target) {
-    return lowerBound(a, target + 1) - lowerBound(a, target);
-}` },
-        { k: 'cx', time: 'O(log n)', space: 'O(1)', why: 'Half the range is discarded each iteration; only three index variables exist.' },
-        { k: 'note', tone: 'trap', title: 'The four bugs', body: '**(1)** `(lo + hi) / 2` overflows when both are large — always `lo + (hi - lo) / 2`. **(2)** Mixing the templates: `<=` goes with inclusive `hi = length - 1`, `<` goes with exclusive `hi = length`. **(3)** `hi = mid` in a `lo <= hi` loop is an infinite loop. **(4)** Forgetting the array must be sorted.' },
-        { k: 'note', tone: 'tip', title: 'Java gives you these for free', body: '`Arrays.binarySearch(a, key)` returns the index, or `-(insertionPoint) - 1` if absent. `TreeMap` has `floorKey`, `ceilingKey`, `higherKey`, `lowerKey` — all O(log n). Knowing these exist is worth mentioning even when you hand-roll the search.' },
-        { k: 'qa', title: 'Asked in interviews', items: [
-          { q: 'Search in a rotated sorted array.', a: 'Still O(log n). At each step, one of the two halves is guaranteed to be properly sorted — check which by comparing `a[lo]` with `a[mid]`. If the target lies inside that sorted half\'s range, search there; otherwise search the other half. The trick is that "which half is sorted" is always answerable in O(1).' },
-          { q: 'Find the peak element in an unsorted array.', a: 'Binary search still works even though the array is not sorted, because the *condition* is monotonic enough: if `a[mid] < a[mid+1]` an upward slope means a peak exists to the right, otherwise one exists at mid or to the left. O(log n). This is the bridge to "binary search on the answer".' },
-        ]},
-      ],
-    },
-    /* ---------------------------------------------------------------- */
-    {
-      id: 'dsa-bs-on-answer',
-      name: 'Binary search on the answer',
-      week: 6, mins: 200,
-      summary: 'When the array is not what you search — the answer itself is.',
-      blocks: [
-        { k: 'p', body: [
-          'This is the advanced form and it feels like magic the first time. Instead of searching an array, you binary search over the **range of possible answers**, using a helper function that asks "is this candidate feasible?"',
-          'It works whenever feasibility is *monotonic*: if a capacity of 10 works, then 11, 12, 13 all work too. That monotonic yes/no boundary is exactly what binary search finds.',
-        ]},
-        { k: 'analogy', body: 'You are hiring a van and want the smallest one that fits your move. You do not measure the furniture — you ask "does a 3-tonne van fit everything? yes. a 2-tonne? yes. a 1-tonne? no." and binary search the van sizes. The furniture never got sorted. The *van sizes* did.' },
-        { k: 'code', lang: 'java', cap: 'Ship packages within D days — the classic', src: `// Given package weights in order, and D days, find the smallest ship
-// capacity that gets everything delivered in D days.
-int shipWithinDays(int[] weights, int days) {
-    int lo = 0, hi = 0;
-    for (int w : weights) {
-        lo = Math.max(lo, w);   // must at least carry the heaviest package
-        hi += w;                // at most, carry everything in one day
-    }
-
-    while (lo < hi) {
-        int mid = lo + (hi - lo) / 2;
-        if (canShip(weights, mid, days)) hi = mid;   // feasible, try smaller
-        else                             lo = mid + 1;
-    }
-    return lo;
-}
-
-// The feasibility check — simple greedy simulation, O(n)
-private boolean canShip(int[] weights, int capacity, int days) {
-    int used = 1, load = 0;
-    for (int w : weights) {
-        if (load + w > capacity) {   // start a new day
-            used++;
-            load = 0;
-        }
-        load += w;
-    }
-    return used <= days;
-}` },
-        { k: 'cx', time: 'O(n log S)', space: 'O(1)', why: 'S is the size of the answer range. Each of the log S binary search steps runs an O(n) feasibility check.' },
-        { k: 'list', title: 'How to spot it', items: [
-          'The question says **"minimum maximum"** or **"maximum minimum"** — a huge tell',
-          '"Smallest capacity / speed / size such that…"',
-          '"Split the array into k parts, minimise the largest part"',
-          'Koko eating bananas, split array largest sum, minimum days to make bouquets',
-        ]},
-        { k: 'note', tone: 'tip', title: 'The recipe', body: '**(1)** What is the answer range — lowest possible and highest possible? **(2)** Write `boolean feasible(candidate)` as a plain greedy loop. **(3)** Binary search the range with template 2. Write those three pieces separately and the problem falls apart; try to write it in one go and you will tangle it.' },
-      ],
-    },
-    /* ---------------------------------------------------------------- */
-    {
       id: 'dsa-sorting',
       name: 'Sorting — implemented',
-      week: 7, mins: 260, tag: 'core',
+      week: 5, mins: 260, tag: 'core',
       summary: 'Write merge sort and quicksort by hand. Divide-and-conquer and partitioning are reusable tools, not just sorting trivia.',
       blocks: [
         { k: 'p', body: [
@@ -1035,102 +832,216 @@ words.sort(Comparator.comparingInt(String::length).reversed());  // safer` },
     },
     /* ---------------------------------------------------------------- */
     {
-      id: 'dsa-math',
-      name: 'Maths & number theory',
-      week: 8, mins: 180,
-      summary: 'GCD, primes, modular arithmetic, fast exponentiation, overflow. A small toolkit — and none of it is hard maths.',
+      id: 'dsa-binary-search',
+      name: 'Binary search',
+      week: 6, mins: 240, tag: 'core',
+      summary: 'Halve the search space every step. Simple idea, brutal off-by-one traps.',
       blocks: [
         { k: 'p', body: [
-          'A handful of numeric techniques show up often enough to be worth knowing cold. None of them require mathematical background — each is a short algorithm with a one-line reason it works.',
+          'On sorted data, look at the middle. If it is too small, the answer is to the right and you discard the entire left half. If it is too big, discard the right. Each step halves what remains, so a million items takes twenty steps.',
+          'The idea takes one minute. The implementation takes a week, because the boundary conditions are genuinely fiddly. **Memorise one template and never deviate from it** — this is the one place in DSA where memorisation beats understanding.',
         ]},
-        { k: 'code', lang: 'java', cap: 'GCD and LCM — Euclid\'s algorithm', src: `// The whole insight: gcd(a, b) == gcd(b, a mod b).
-// Any common divisor of a and b also divides their remainder, so the
-// problem shrinks fast — it is O(log(min(a,b))).
-int gcd(int a, int b) {
-    while (b != 0) {
-        int tmp = b;
-        b = a % b;
-        a = tmp;
+        { k: 'code', lang: 'java', cap: 'Template 1 — exact match (memorise this exactly)', src: `int search(int[] a, int target) {
+    int lo = 0, hi = a.length - 1;          // hi is INCLUSIVE
+
+    while (lo <= hi) {                       // note: <=
+        int mid = lo + (hi - lo) / 2;        // overflow-safe
+
+        if (a[mid] == target)  return mid;
+        if (a[mid] < target)   lo = mid + 1;
+        else                   hi = mid - 1;
     }
-    return a;
+    return -1;
+}` },
+        { k: 'code', lang: 'java', cap: 'Template 2 — leftmost / boundary (the one that actually shows up)', src: `// First index where a[i] >= target. Returns a.length if none.
+// This one answers "how many are smaller", "where do I insert",
+// "first bad version", "leftmost occurrence" — all the same shape.
+int lowerBound(int[] a, int target) {
+    int lo = 0, hi = a.length;               // hi is EXCLUSIVE this time
+
+    while (lo < hi) {                         // note: <
+        int mid = lo + (hi - lo) / 2;
+        if (a[mid] < target) lo = mid + 1;    // mid is too small, discard it
+        else                 hi = mid;        // mid might BE the answer, keep it
+    }
+    return lo;                                 // lo == hi == the boundary
 }
 
-int gcdRecursive(int a, int b) { return b == 0 ? a : gcdRecursive(b, a % b); }
-
-// LCM via GCD. Divide FIRST to avoid overflowing on the multiply.
-long lcm(int a, int b) { return (long) a / gcd(a, b) * b; }
-
-// Java has it built in for BigInteger, and for int since Java 9 there is
-// Math.floorMod for the modulo-sign problem below.` },
-        { k: 'code', lang: 'java', cap: 'Primes — trial division and the Sieve', src: `// ONE number: test divisors up to sqrt(n). Any factor above sqrt(n)
-// has a partner below it, so there is nothing new above the root.
-boolean isPrime(int n) {
-    if (n < 2) return false;
-    if (n % 2 == 0) return n == 2;
-    for (int i = 3; (long) i * i <= n; i += 2) {   // odds only
-        if (n % i == 0) return false;
+// Count of elements equal to target
+int countOf(int[] a, int target) {
+    return lowerBound(a, target + 1) - lowerBound(a, target);
+}` },
+        { k: 'cx', time: 'O(log n)', space: 'O(1)', why: 'Half the range is discarded each iteration; only three index variables exist.' },
+        { k: 'note', tone: 'trap', title: 'The four bugs', body: '**(1)** `(lo + hi) / 2` overflows when both are large — always `lo + (hi - lo) / 2`. **(2)** Mixing the templates: `<=` goes with inclusive `hi = length - 1`, `<` goes with exclusive `hi = length`. **(3)** `hi = mid` in a `lo <= hi` loop is an infinite loop. **(4)** Forgetting the array must be sorted.' },
+        { k: 'note', tone: 'tip', title: 'Java gives you these for free', body: '`Arrays.binarySearch(a, key)` returns the index, or `-(insertionPoint) - 1` if absent. `TreeMap` has `floorKey`, `ceilingKey`, `higherKey`, `lowerKey` — all O(log n). Knowing these exist is worth mentioning even when you hand-roll the search.' },
+        { k: 'qa', title: 'Asked in interviews', items: [
+          { q: 'Search in a rotated sorted array.', a: 'Still O(log n). At each step, one of the two halves is guaranteed to be properly sorted — check which by comparing `a[lo]` with `a[mid]`. If the target lies inside that sorted half\'s range, search there; otherwise search the other half. The trick is that "which half is sorted" is always answerable in O(1).' },
+          { q: 'Find the peak element in an unsorted array.', a: 'Binary search still works even though the array is not sorted, because the *condition* is monotonic enough: if `a[mid] < a[mid+1]` an upward slope means a peak exists to the right, otherwise one exists at mid or to the left. O(log n). This is the bridge to "binary search on the answer".' },
+        ]},
+      ],
+    },
+    /* ---------------------------------------------------------------- */
+    {
+      id: 'dsa-bs-on-answer',
+      name: 'Binary search on the answer',
+      week: 8, mins: 200,
+      summary: 'When the array is not what you search — the answer itself is.',
+      blocks: [
+        { k: 'p', body: [
+          'This is the advanced form and it feels like magic the first time. Instead of searching an array, you binary search over the **range of possible answers**, using a helper function that asks "is this candidate feasible?"',
+          'It works whenever feasibility is *monotonic*: if a capacity of 10 works, then 11, 12, 13 all work too. That monotonic yes/no boundary is exactly what binary search finds.',
+        ]},
+        { k: 'analogy', body: 'You are hiring a van and want the smallest one that fits your move. You do not measure the furniture — you ask "does a 3-tonne van fit everything? yes. a 2-tonne? yes. a 1-tonne? no." and binary search the van sizes. The furniture never got sorted. The *van sizes* did.' },
+        { k: 'code', lang: 'java', cap: 'Ship packages within D days — the classic', src: `// Given package weights in order, and D days, find the smallest ship
+// capacity that gets everything delivered in D days.
+int shipWithinDays(int[] weights, int days) {
+    int lo = 0, hi = 0;
+    for (int w : weights) {
+        lo = Math.max(lo, w);   // must at least carry the heaviest package
+        hi += w;                // at most, carry everything in one day
     }
-    return true;
-}                                                   // O(sqrt n)
 
-// ALL primes up to n: Sieve of Eratosthenes. Mark multiples of each
-// prime as composite. Start marking at i*i — smaller multiples were
-// already marked by a smaller prime.
-boolean[] sieve(int n) {
-    boolean[] composite = new boolean[n + 1];
-    for (int i = 2; (long) i * i <= n; i++) {
-        if (!composite[i]) {
-            for (long j = (long) i * i; j <= n; j += i) composite[(int) j] = true;
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (canShip(weights, mid, days)) hi = mid;   // feasible, try smaller
+        else                             lo = mid + 1;
+    }
+    return lo;
+}
+
+// The feasibility check — simple greedy simulation, O(n)
+private boolean canShip(int[] weights, int capacity, int days) {
+    int used = 1, load = 0;
+    for (int w : weights) {
+        if (load + w > capacity) {   // start a new day
+            used++;
+            load = 0;
+        }
+        load += w;
+    }
+    return used <= days;
+}` },
+        { k: 'cx', time: 'O(n log S)', space: 'O(1)', why: 'S is the size of the answer range. Each of the log S binary search steps runs an O(n) feasibility check.' },
+        { k: 'list', title: 'How to spot it', items: [
+          'The question says **"minimum maximum"** or **"maximum minimum"** — a huge tell',
+          '"Smallest capacity / speed / size such that…"',
+          '"Split the array into k parts, minimise the largest part"',
+          'Koko eating bananas, split array largest sum, minimum days to make bouquets',
+        ]},
+        { k: 'note', tone: 'tip', title: 'The recipe', body: '**(1)** What is the answer range — lowest possible and highest possible? **(2)** Write `boolean feasible(candidate)` as a plain greedy loop. **(3)** Binary search the range with template 2. Write those three pieces separately and the problem falls apart; try to write it in one go and you will tangle it.' },
+      ],
+    },
+    /* ---------------------------------------------------------------- */
+    {
+      id: 'dsa-intervals',
+      name: 'Intervals',
+      week: 8, mins: 150,
+      summary: 'Sort, then sweep. A small pattern with an outsized presence in interviews.',
+      blocks: [
+        { k: 'p', body: [
+          'Interval problems are calendars, bookings, ranges. They are almost all solved the same way: **sort by start time, then walk through merging or counting.** The variation is only in what you do on overlap.',
+        ]},
+        { k: 'code', lang: 'java', cap: 'Merge intervals — the base problem', src: `int[][] merge(int[][] intervals) {
+    Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));   // by START
+
+    List<int[]> merged = new ArrayList<>();
+    int[] current = intervals[0];
+
+    for (int i = 1; i < intervals.length; i++) {
+        if (intervals[i][0] <= current[1]) {
+            // overlap: stretch the current interval's end
+            current[1] = Math.max(current[1], intervals[i][1]);
+        } else {
+            merged.add(current);       // no overlap: bank it and move on
+            current = intervals[i];
         }
     }
-    return composite;                               // !composite[k] => k is prime
-}                                                    // O(n log log n)` },
-        { k: 'cx', time: 'O(√n) single, O(n log log n) sieve', space: 'O(1) / O(n)', why: 'Trial division stops at the square root. The sieve\'s cost is the sum of n/p over all primes p ≤ n, which converges to n log log n — effectively linear.' },
-        { k: 'code', lang: 'java', cap: 'Fast exponentiation — O(log n) instead of O(n)', src: `// a^n by squaring: a^10 = (a^5)^2, a^5 = a * (a^2)^2.
-// Halving the exponent each step gives log n multiplications.
-long power(long base, long exp, long mod) {
-    long result = 1;
-    base %= mod;
+    merged.add(current);               // do not forget the last one
+    return merged.toArray(new int[0][]);
+}` },
+        { k: 'code', lang: 'java', cap: 'Meeting rooms II — minimum rooms needed', src: `// Two equivalent approaches. This is the sweep-line one: separate the
+// starts and ends, then walk the timeline counting concurrent meetings.
+int minMeetingRooms(int[][] intervals) {
+    int n = intervals.length;
+    int[] starts = new int[n], ends = new int[n];
 
-    while (exp > 0) {
-        if ((exp & 1) == 1) result = result * base % mod;   // odd bit -> multiply
-        base = base * base % mod;                           // square
-        exp >>= 1;                                           // halve
+    for (int i = 0; i < n; i++) {
+        starts[i] = intervals[i][0];
+        ends[i]   = intervals[i][1];
     }
-    return result;
-}
-// 2^1000000007 in ~30 multiplications instead of a billion.
-// This is the core of RSA and of every "answer modulo 1e9+7" problem.` },
-        { k: 'code', lang: 'java', cap: 'Overflow and the negative-modulo trap', src: `// OVERFLOW: int silently wraps. There is no exception.
-int big = Integer.MAX_VALUE;
-big + 1;                           // -2147483648  — silently wrong
+    Arrays.sort(starts);
+    Arrays.sort(ends);
 
-// Three defences:
-(long) a * b;                      // widen BEFORE multiplying, not after
-Math.addExact(a, b);               // throws ArithmeticException on overflow
-lo + (hi - lo) / 2;                // the binary-search midpoint idiom
-
-// NEGATIVE MODULO: in Java, % returns the sign of the DIVIDEND.
--7 % 3;                            // -1   (many languages give 2)
-Math.floorMod(-7, 3);              // 2    — what you usually want
-
-// Normalising by hand:
-int mod(int a, int m) { return ((a % m) + m) % m; }
-
-// MONEY: never double. 0.1 + 0.2 != 0.3 in binary floating point.
-BigDecimal amount = new BigDecimal("0.1").add(new BigDecimal("0.2"));
-// and compare with compareTo, not equals — equals also compares scale,
-// so 1.0 and 1.00 are "not equal".` },
-        { k: 'note', tone: 'trap', title: 'The three that cost people the question', body: '**(1)** `(a + b) / 2` overflows on large ints — use `lo + (hi - lo) / 2`. **(2)** `%` on a negative number returns negative in Java — use `Math.floorMod` when you need a non-negative index, which bites in hashing and circular-array problems. **(3)** `int` multiplication overflows *before* assignment to a `long`, so `long x = a * b;` is still wrong — you must cast one operand first.' },
+    int rooms = 0, maxRooms = 0, e = 0;
+    for (int s = 0; s < n; s++) {
+        while (e < n && ends[e] <= starts[s]) { rooms--; e++; }  // meetings that ended
+        rooms++;                                                  // one starting now
+        maxRooms = Math.max(maxRooms, rooms);
+    }
+    return maxRooms;
+}` },
+        { k: 'cx', time: 'O(n log n)', space: 'O(n)', why: 'The sort dominates; the sweep is one linear pass.' },
+        { k: 'note', tone: 'tip', title: 'Sort by start or by end?', body: '**By start** when merging or combining overlapping ranges. **By end** when maximising how many non-overlapping items you can keep (finishing earliest leaves the most room for the rest). Getting this backwards is the classic interval mistake — say which one you are choosing and why before you write the sort.' },
         { k: 'list', title: 'The problems', items: [
-          'Count primes, happy number, ugly number',
-          'Power of two / three / four (bit tricks or logs)',
-          'Pow(x, n) — fast exponentiation, watch the negative exponent',
-          'Sqrt(x) — binary search on the answer',
-          'Excel column number, Roman numerals, add digits',
-          'Reverse integer, palindrome number (both overflow traps)',
-          'Factorial trailing zeroes (count factors of 5)',
-          'Fraction to recurring decimal',
+          'Merge intervals; insert interval',
+          'Non-overlapping intervals (minimum removals)',
+          'Meeting rooms I (can one person attend all?) and II (how many rooms?)',
+          'Interval list intersections',
+          'Car pooling, my calendar I/II',
+          'Employee free time',
+        ]},
+      ],
+    },
+    /* ---------------------------------------------------------------- */
+    {
+      id: 'dsa-greedy',
+      name: 'Greedy',
+      week: 8, mins: 160,
+      summary: 'Take the locally best option and never look back. Fast when it works, wrong when it does not.',
+      blocks: [
+        { k: 'p', body: [
+          'A greedy algorithm makes the choice that looks best right now and never reconsiders. When it is valid it is beautifully simple — usually a sort plus one pass. When it is not valid it produces confidently wrong answers, which is far more dangerous than being slow.',
+          'The hard part is never the code. It is knowing whether greedy is *allowed* for that problem.',
+        ]},
+        { k: 'analogy', body: 'Making change for £6.30 with UK coins: take the biggest coin that fits, repeat. Optimal, every time. Now imagine a currency with 1, 3 and 4 unit coins and you need 6. Greedy takes 4, then 1, then 1 — three coins. The right answer is 3 + 3 — two coins. Identical algorithm, different coin set, wrong result. Nothing in the code tells you which world you are in.' },
+        { k: 'code', lang: 'java', cap: 'Two greedy problems that do work', src: `// JUMP GAME: each value is the max jump length from that spot. Can you reach the end?
+// Greedy: track the furthest index reachable so far.
+boolean canJump(int[] nums) {
+    int furthest = 0;
+    for (int i = 0; i < nums.length; i++) {
+        if (i > furthest) return false;             // stranded before here
+        furthest = Math.max(furthest, i + nums[i]);
+    }
+    return true;
+}
+
+// NON-OVERLAPPING INTERVALS: fewest removals so none overlap.
+// Greedy: sort by END time, always keep the one that finishes soonest —
+// it leaves the most room for everything after it.
+int eraseOverlapIntervals(int[][] intervals) {
+    Arrays.sort(intervals, (a, b) -> Integer.compare(a[1], b[1]));
+
+    int kept = 1;
+    int lastEnd = intervals[0][1];
+
+    for (int i = 1; i < intervals.length; i++) {
+        if (intervals[i][0] >= lastEnd) {   // no overlap, keep it
+            kept++;
+            lastEnd = intervals[i][1];
+        }
+    }
+    return intervals.length - kept;
+}` },
+        { k: 'cx', time: 'O(n log n)', space: 'O(1)', why: 'Dominated by the sort; the pass itself is O(n) with a couple of variables.' },
+        { k: 'note', tone: 'warn', title: 'How to know if greedy is safe', body: 'Ask: **could taking the best option now ever make a later option impossible in a way that costs more than it saved?** If yes, greedy is unsafe and you need DP. In an interview, try to construct a counter-example in ten seconds — if you cannot, propose greedy and say "I believe the exchange argument holds here because…". Reasoning aloud about *why* it is safe scores far higher than just writing it.' },
+        { k: 'list', title: 'Problems where greedy is provably correct', items: [
+          'Activity selection / non-overlapping intervals (sort by end)',
+          'Merge intervals (sort by start)',
+          'Jump game I & II',
+          'Gas station',
+          'Task scheduler',
+          'Assign cookies, boats to save people',
+          'Best time to buy and sell stock II (take every rise)',
         ]},
       ],
     },
@@ -1175,7 +1086,7 @@ BigDecimal amount = new BigDecimal("0.1").add(new BigDecimal("0.2"));
     {
       id: 'dsa-monotonic-stack',
       name: 'Monotonic stack',
-      week: 9, mins: 200,
+      week: 10, mins: 200,
       summary: 'A stack kept in sorted order. Solves "next greater element" in O(n).',
       blocks: [
         { k: 'p', body: [
@@ -1230,7 +1141,7 @@ int[] dailyTemperatures(int[] t) {
     {
       id: 'dsa-queue-deque',
       name: 'Queue & deque',
-      week: 9, mins: 180,
+      week: 10, mins: 180,
       summary: 'First in, first out — plus the double-ended version that powers sliding-window maximum.',
       blocks: [
         { k: 'p', body: [
@@ -1337,9 +1248,110 @@ ListNode middle(ListNode head) {
     },
     /* ---------------------------------------------------------------- */
     {
+      id: 'dsa-math',
+      name: 'Maths & number theory',
+      week: 11, mins: 180,
+      summary: 'GCD, primes, modular arithmetic, fast exponentiation, overflow. A small toolkit — and none of it is hard maths.',
+      blocks: [
+        { k: 'p', body: [
+          'A handful of numeric techniques show up often enough to be worth knowing cold. None of them require mathematical background — each is a short algorithm with a one-line reason it works.',
+        ]},
+        { k: 'code', lang: 'java', cap: 'GCD and LCM — Euclid\'s algorithm', src: `// The whole insight: gcd(a, b) == gcd(b, a mod b).
+// Any common divisor of a and b also divides their remainder, so the
+// problem shrinks fast — it is O(log(min(a,b))).
+int gcd(int a, int b) {
+    while (b != 0) {
+        int tmp = b;
+        b = a % b;
+        a = tmp;
+    }
+    return a;
+}
+
+int gcdRecursive(int a, int b) { return b == 0 ? a : gcdRecursive(b, a % b); }
+
+// LCM via GCD. Divide FIRST to avoid overflowing on the multiply.
+long lcm(int a, int b) { return (long) a / gcd(a, b) * b; }
+
+// Java has it built in for BigInteger, and for int since Java 9 there is
+// Math.floorMod for the modulo-sign problem below.` },
+        { k: 'code', lang: 'java', cap: 'Primes — trial division and the Sieve', src: `// ONE number: test divisors up to sqrt(n). Any factor above sqrt(n)
+// has a partner below it, so there is nothing new above the root.
+boolean isPrime(int n) {
+    if (n < 2) return false;
+    if (n % 2 == 0) return n == 2;
+    for (int i = 3; (long) i * i <= n; i += 2) {   // odds only
+        if (n % i == 0) return false;
+    }
+    return true;
+}                                                   // O(sqrt n)
+
+// ALL primes up to n: Sieve of Eratosthenes. Mark multiples of each
+// prime as composite. Start marking at i*i — smaller multiples were
+// already marked by a smaller prime.
+boolean[] sieve(int n) {
+    boolean[] composite = new boolean[n + 1];
+    for (int i = 2; (long) i * i <= n; i++) {
+        if (!composite[i]) {
+            for (long j = (long) i * i; j <= n; j += i) composite[(int) j] = true;
+        }
+    }
+    return composite;                               // !composite[k] => k is prime
+}                                                    // O(n log log n)` },
+        { k: 'cx', time: 'O(√n) single, O(n log log n) sieve', space: 'O(1) / O(n)', why: 'Trial division stops at the square root. The sieve\'s cost is the sum of n/p over all primes p ≤ n, which converges to n log log n — effectively linear.' },
+        { k: 'code', lang: 'java', cap: 'Fast exponentiation — O(log n) instead of O(n)', src: `// a^n by squaring: a^10 = (a^5)^2, a^5 = a * (a^2)^2.
+// Halving the exponent each step gives log n multiplications.
+long power(long base, long exp, long mod) {
+    long result = 1;
+    base %= mod;
+
+    while (exp > 0) {
+        if ((exp & 1) == 1) result = result * base % mod;   // odd bit -> multiply
+        base = base * base % mod;                           // square
+        exp >>= 1;                                           // halve
+    }
+    return result;
+}
+// 2^1000000007 in ~30 multiplications instead of a billion.
+// This is the core of RSA and of every "answer modulo 1e9+7" problem.` },
+        { k: 'code', lang: 'java', cap: 'Overflow and the negative-modulo trap', src: `// OVERFLOW: int silently wraps. There is no exception.
+int big = Integer.MAX_VALUE;
+big + 1;                           // -2147483648  — silently wrong
+
+// Three defences:
+(long) a * b;                      // widen BEFORE multiplying, not after
+Math.addExact(a, b);               // throws ArithmeticException on overflow
+lo + (hi - lo) / 2;                // the binary-search midpoint idiom
+
+// NEGATIVE MODULO: in Java, % returns the sign of the DIVIDEND.
+-7 % 3;                            // -1   (many languages give 2)
+Math.floorMod(-7, 3);              // 2    — what you usually want
+
+// Normalising by hand:
+int mod(int a, int m) { return ((a % m) + m) % m; }
+
+// MONEY: never double. 0.1 + 0.2 != 0.3 in binary floating point.
+BigDecimal amount = new BigDecimal("0.1").add(new BigDecimal("0.2"));
+// and compare with compareTo, not equals — equals also compares scale,
+// so 1.0 and 1.00 are "not equal".` },
+        { k: 'note', tone: 'trap', title: 'The three that cost people the question', body: '**(1)** `(a + b) / 2` overflows on large ints — use `lo + (hi - lo) / 2`. **(2)** `%` on a negative number returns negative in Java — use `Math.floorMod` when you need a non-negative index, which bites in hashing and circular-array problems. **(3)** `int` multiplication overflows *before* assignment to a `long`, so `long x = a * b;` is still wrong — you must cast one operand first.' },
+        { k: 'list', title: 'The problems', items: [
+          'Count primes, happy number, ugly number',
+          'Power of two / three / four (bit tricks or logs)',
+          'Pow(x, n) — fast exponentiation, watch the negative exponent',
+          'Sqrt(x) — binary search on the answer',
+          'Excel column number, Roman numerals, add digits',
+          'Reverse integer, palindrome number (both overflow traps)',
+          'Factorial trailing zeroes (count factors of 5)',
+          'Fraction to recurring decimal',
+        ]},
+      ],
+    },
+    /* ---------------------------------------------------------------- */
+    {
       id: 'dsa-recursion',
       name: 'Recursion',
-      week: 10, mins: 300, tag: 'core',
+      week: 12, mins: 300, tag: 'core',
       summary: 'The concept that gates trees, graphs, backtracking and DP. Take two weeks if you need them.',
       blocks: [
         { k: 'p', body: [
@@ -1394,7 +1406,7 @@ int fibMemo(int n, Integer[] memo) {
     {
       id: 'dsa-trees',
       name: 'Trees & traversals',
-      week: 11, mins: 260, tag: 'core',
+      week: 12, mins: 260, tag: 'core',
       summary: 'Recursion with two branches. Four traversals, and knowing which one to use.',
       blocks: [
         { k: 'p', body: [
@@ -1487,7 +1499,7 @@ int checkBalanced(TreeNode n) {
     {
       id: 'dsa-bst',
       name: 'Binary search tree',
-      week: 12, mins: 200,
+      week: 13, mins: 200,
       summary: 'A tree with an ordering rule, which makes search O(log n) — until it does not.',
       blocks: [
         { k: 'p', body: [
@@ -1536,7 +1548,7 @@ boolean isValidBST(TreeNode n, Long min, Long max) {
     {
       id: 'dsa-heap',
       name: 'Heap / PriorityQueue',
-      week: 12, mins: 260, tag: 'core',
+      week: 14, mins: 260, tag: 'core',
       summary: 'Build one from scratch, then use the library. An array that behaves like a tree.',
       blocks: [
         { k: 'p', body: [
@@ -1680,7 +1692,7 @@ int[] topK(int[] nums, int k) {
     {
       id: 'dsa-graph-basics',
       name: 'Graphs — representation',
-      week: 13, mins: 180, tag: 'core',
+      week: 15, mins: 180, tag: 'core',
       summary: 'How to store a graph before you can traverse one. Adjacency lists, almost always.',
       blocks: [
         { k: 'p', body: [
@@ -1739,7 +1751,7 @@ for (int[] d : DIRS) {
     {
       id: 'dsa-bfs-dfs',
       name: 'BFS & DFS',
-      week: 13, mins: 280, tag: 'core',
+      week: 15, mins: 280, tag: 'core',
       summary: 'The two ways to explore. Nearly every graph question is one of these with a twist.',
       blocks: [
         { k: 'p', body: [
@@ -1827,7 +1839,7 @@ private void sink(char[][] g, int r, int c) {
     {
       id: 'dsa-topo-sort',
       name: 'Topological sort',
-      week: 14, mins: 180,
+      week: 16, mins: 180,
       summary: 'Ordering things with dependencies. Also the standard way to detect a cycle in a DAG.',
       blocks: [
         { k: 'p', body: [
@@ -1881,7 +1893,7 @@ int[] findOrder(int numCourses, int[][] prerequisites) {
     {
       id: 'dsa-union-find',
       name: 'Union-Find (Disjoint Set)',
-      week: 15, mins: 180,
+      week: 17, mins: 180,
       summary: 'Track which things are connected, in effectively constant time.',
       blocks: [
         { k: 'p', body: [
@@ -1942,7 +1954,7 @@ int[] findOrder(int numCourses, int[][] prerequisites) {
     {
       id: 'dsa-shortest-path',
       name: "Dijkstra & weighted paths",
-      week: 15, mins: 160,
+      week: 17, mins: 160,
       summary: 'BFS with a heap, for when edges have different costs.',
       blocks: [
         { k: 'p', body: [
@@ -1992,7 +2004,7 @@ int[] dijkstra(List<List<int[]>> graph, int start) {
     {
       id: 'dsa-advanced-graphs',
       name: 'Advanced graphs — MST, bipartite & all-pairs',
-      week: 16, mins: 190,
+      week: 17, mins: 190,
       summary: 'Minimum spanning trees, two-colouring, and the shortest-path algorithms Dijkstra cannot handle.',
       blocks: [
         { k: 'p', title: 'Minimum spanning tree', body: [
@@ -2103,104 +2115,9 @@ void floydWarshall(int[][] dist, int n) {
     },
     /* ---------------------------------------------------------------- */
     {
-      id: 'dsa-segment-tree',
-      name: 'Segment tree & Fenwick tree',
-      week: 16, mins: 170,
-      summary: 'Range queries WITH updates, both in O(log n). What prefix sums cannot do.',
-      blocks: [
-        { k: 'p', body: [
-          'Prefix sums answer "sum of the range i..j" in O(1) — but if any element changes you must rebuild the whole array, O(n) per update. If the data changes often, that is unusable.',
-          'A **segment tree** stores aggregates over ranges in a tree, so both query and update are O(log n). A **Fenwick tree** (Binary Indexed Tree) does the same for sums in less code and less memory, at the cost of flexibility.',
-        ]},
-        { k: 'analogy', body: 'A company reporting structure. Asking the CEO for total headcount is instant because every manager keeps a running total for their own branch. When one person joins, you do not recount the company — you walk up that one chain of managers incrementing each total. One path, not the whole org.' },
-        { k: 'table', title: 'Which structure for which job', head: ['Need', 'Structure', 'Query', 'Update'], rows: [
-          ['Range sum, data never changes', 'Prefix sums', 'O(1)', 'O(n) — rebuild'],
-          ['Range sum, frequent updates', '**Fenwick tree**', 'O(log n)', 'O(log n)'],
-          ['Range min/max/gcd, frequent updates', '**Segment tree**', 'O(log n)', 'O(log n)'],
-          ['Range min/max, data never changes', 'Sparse table', 'O(1)', 'not supported'],
-        ]},
-        { k: 'code', lang: 'java', cap: 'Segment tree — array-backed, handles any associative operation', src: `class SegmentTree {
-    private final int[] tree;
-    private final int n;
-
-    // Node i covers a range; its children are 2i+1 and 2i+2.
-    // 4n is the safe size for the array backing (the tree is not always full).
-    SegmentTree(int[] a) {
-        n = a.length;
-        tree = new int[4 * n];
-        build(a, 0, 0, n - 1);
-    }
-
-    private void build(int[] a, int node, int lo, int hi) {
-        if (lo == hi) { tree[node] = a[lo]; return; }    // leaf = one element
-        int mid = lo + (hi - lo) / 2;
-        build(a, 2*node + 1, lo, mid);
-        build(a, 2*node + 2, mid + 1, hi);
-        tree[node] = tree[2*node + 1] + tree[2*node + 2];  // combine children
-    }                                 // ^ swap for Math.min / Math.max / gcd
-
-    int query(int from, int to) { return query(0, 0, n - 1, from, to); }
-
-    private int query(int node, int lo, int hi, int from, int to) {
-        if (to < lo || hi < from) return 0;              // no overlap (identity)
-        if (from <= lo && hi <= to) return tree[node];   // total overlap
-        int mid = lo + (hi - lo) / 2;                     // partial: split
-        return query(2*node + 1, lo, mid, from, to)
-             + query(2*node + 2, mid + 1, hi, from, to);
-    }
-
-    void update(int index, int value) { update(0, 0, n - 1, index, value); }
-
-    private void update(int node, int lo, int hi, int i, int value) {
-        if (lo == hi) { tree[node] = value; return; }
-        int mid = lo + (hi - lo) / 2;
-        if (i <= mid) update(2*node + 1, lo, mid, i, value);
-        else          update(2*node + 2, mid + 1, hi, i, value);
-        tree[node] = tree[2*node + 1] + tree[2*node + 2];   // recompute on the way up
-    }
-}` },
-        { k: 'cx', time: 'O(log n) query and update, O(n) build', space: 'O(n)', why: 'A query touches at most 4 nodes per level across log n levels. Build visits each node once. The 4n array is a safe over-allocation for a non-perfect tree.' },
-        { k: 'code', lang: 'java', cap: 'Fenwick tree — the same thing for sums, in a third of the code', src: `// Each index is responsible for a range whose length is its lowest set bit.
-// i & -i isolates that bit, which is the whole trick.
-class FenwickTree {
-    private final int[] tree;                 // 1-INDEXED internally
-
-    FenwickTree(int n) { tree = new int[n + 1]; }
-
-    /** Add delta at index i (0-based externally). */
-    void update(int i, int delta) {
-        for (i++; i < tree.length; i += i & -i) {   // walk UP the responsibility chain
-            tree[i] += delta;
-        }
-    }
-
-    /** Sum of [0..i] inclusive. */
-    int prefixSum(int i) {
-        int sum = 0;
-        for (i++; i > 0; i -= i & -i) {             // walk DOWN, collecting
-            sum += tree[i];
-        }
-        return sum;
-    }
-
-    int rangeSum(int from, int to) { return prefixSum(to) - prefixSum(from - 1); }
-}` },
-        { k: 'note', tone: 'tip', title: 'What is realistically expected', body: 'For a backend product interview you are unlikely to be asked to implement either from memory. What you *should* be able to do is **recognise the need**: when a question says "range queries with updates", say *"prefix sums give O(1) queries but O(n) updates; if updates are frequent I\'d use a Fenwick tree for sums or a segment tree for min/max, both O(log n) for each operation."* That sentence is the deliverable. Implement it once so the sentence is backed by understanding.' },
-        { k: 'list', title: 'Where it shows up', items: [
-          'Range sum query — mutable (the canonical problem)',
-          'Count of smaller numbers after self',
-          'Range minimum query with updates',
-          'Number of inversions in an array',
-          'My calendar / booking problems with overlap counts',
-          'In real systems: analytics over sliding time ranges, leaderboard rank queries',
-        ]},
-      ],
-    },
-    /* ---------------------------------------------------------------- */
-    {
       id: 'dsa-backtracking',
       name: 'Backtracking',
-      week: 17, mins: 260, tag: 'core',
+      week: 18, mins: 260, tag: 'core',
       summary: 'Try, recurse, undo. The pattern for "generate all possible…".',
       blocks: [
         { k: 'p', body: [
@@ -2271,7 +2188,7 @@ void permute(int[] nums, boolean[] used, List<Integer> current, List<List<Intege
     {
       id: 'dsa-dp-intro',
       name: 'Dynamic programming — the idea',
-      week: 17, mins: 240, tag: 'core',
+      week: 19, mins: 240, tag: 'core',
       summary: 'Recursion that remembers. Not a new technique — an optimisation of one you already have.',
       blocks: [
         { k: 'p', body: [
@@ -2329,7 +2246,7 @@ int fibOpt(int n) {
     {
       id: 'dsa-dp-1d',
       name: 'DP patterns — 1-D',
-      week: 18, mins: 260,
+      week: 19, mins: 260,
       summary: 'One array, one decision per position. Start here.',
       blocks: [
         { k: 'p', body: [
@@ -2394,7 +2311,7 @@ int coinChange(int[] coins, int amount) {
     {
       id: 'dsa-dp-knapsack',
       name: 'DP patterns — knapsack',
-      week: 19, mins: 260,
+      week: 20, mins: 260,
       summary: 'Take it or leave it, with a budget. One shape, many disguises.',
       blocks: [
         { k: 'p', body: [
@@ -2555,120 +2472,6 @@ int editDistance(String a, String b) {
     },
     /* ---------------------------------------------------------------- */
     {
-      id: 'dsa-greedy',
-      name: 'Greedy',
-      week: 20, mins: 160,
-      summary: 'Take the locally best option and never look back. Fast when it works, wrong when it does not.',
-      blocks: [
-        { k: 'p', body: [
-          'A greedy algorithm makes the choice that looks best right now and never reconsiders. When it is valid it is beautifully simple — usually a sort plus one pass. When it is not valid it produces confidently wrong answers, which is far more dangerous than being slow.',
-          'The hard part is never the code. It is knowing whether greedy is *allowed* for that problem.',
-        ]},
-        { k: 'analogy', body: 'Making change for £6.30 with UK coins: take the biggest coin that fits, repeat. Optimal, every time. Now imagine a currency with 1, 3 and 4 unit coins and you need 6. Greedy takes 4, then 1, then 1 — three coins. The right answer is 3 + 3 — two coins. Identical algorithm, different coin set, wrong result. Nothing in the code tells you which world you are in.' },
-        { k: 'code', lang: 'java', cap: 'Two greedy problems that do work', src: `// JUMP GAME: each value is the max jump length from that spot. Can you reach the end?
-// Greedy: track the furthest index reachable so far.
-boolean canJump(int[] nums) {
-    int furthest = 0;
-    for (int i = 0; i < nums.length; i++) {
-        if (i > furthest) return false;             // stranded before here
-        furthest = Math.max(furthest, i + nums[i]);
-    }
-    return true;
-}
-
-// NON-OVERLAPPING INTERVALS: fewest removals so none overlap.
-// Greedy: sort by END time, always keep the one that finishes soonest —
-// it leaves the most room for everything after it.
-int eraseOverlapIntervals(int[][] intervals) {
-    Arrays.sort(intervals, (a, b) -> Integer.compare(a[1], b[1]));
-
-    int kept = 1;
-    int lastEnd = intervals[0][1];
-
-    for (int i = 1; i < intervals.length; i++) {
-        if (intervals[i][0] >= lastEnd) {   // no overlap, keep it
-            kept++;
-            lastEnd = intervals[i][1];
-        }
-    }
-    return intervals.length - kept;
-}` },
-        { k: 'cx', time: 'O(n log n)', space: 'O(1)', why: 'Dominated by the sort; the pass itself is O(n) with a couple of variables.' },
-        { k: 'note', tone: 'warn', title: 'How to know if greedy is safe', body: 'Ask: **could taking the best option now ever make a later option impossible in a way that costs more than it saved?** If yes, greedy is unsafe and you need DP. In an interview, try to construct a counter-example in ten seconds — if you cannot, propose greedy and say "I believe the exchange argument holds here because…". Reasoning aloud about *why* it is safe scores far higher than just writing it.' },
-        { k: 'list', title: 'Problems where greedy is provably correct', items: [
-          'Activity selection / non-overlapping intervals (sort by end)',
-          'Merge intervals (sort by start)',
-          'Jump game I & II',
-          'Gas station',
-          'Task scheduler',
-          'Assign cookies, boats to save people',
-          'Best time to buy and sell stock II (take every rise)',
-        ]},
-      ],
-    },
-    /* ---------------------------------------------------------------- */
-    {
-      id: 'dsa-intervals',
-      name: 'Intervals',
-      week: 21, mins: 150,
-      summary: 'Sort, then sweep. A small pattern with an outsized presence in interviews.',
-      blocks: [
-        { k: 'p', body: [
-          'Interval problems are calendars, bookings, ranges. They are almost all solved the same way: **sort by start time, then walk through merging or counting.** The variation is only in what you do on overlap.',
-        ]},
-        { k: 'code', lang: 'java', cap: 'Merge intervals — the base problem', src: `int[][] merge(int[][] intervals) {
-    Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));   // by START
-
-    List<int[]> merged = new ArrayList<>();
-    int[] current = intervals[0];
-
-    for (int i = 1; i < intervals.length; i++) {
-        if (intervals[i][0] <= current[1]) {
-            // overlap: stretch the current interval's end
-            current[1] = Math.max(current[1], intervals[i][1]);
-        } else {
-            merged.add(current);       // no overlap: bank it and move on
-            current = intervals[i];
-        }
-    }
-    merged.add(current);               // do not forget the last one
-    return merged.toArray(new int[0][]);
-}` },
-        { k: 'code', lang: 'java', cap: 'Meeting rooms II — minimum rooms needed', src: `// Two equivalent approaches. This is the sweep-line one: separate the
-// starts and ends, then walk the timeline counting concurrent meetings.
-int minMeetingRooms(int[][] intervals) {
-    int n = intervals.length;
-    int[] starts = new int[n], ends = new int[n];
-
-    for (int i = 0; i < n; i++) {
-        starts[i] = intervals[i][0];
-        ends[i]   = intervals[i][1];
-    }
-    Arrays.sort(starts);
-    Arrays.sort(ends);
-
-    int rooms = 0, maxRooms = 0, e = 0;
-    for (int s = 0; s < n; s++) {
-        while (e < n && ends[e] <= starts[s]) { rooms--; e++; }  // meetings that ended
-        rooms++;                                                  // one starting now
-        maxRooms = Math.max(maxRooms, rooms);
-    }
-    return maxRooms;
-}` },
-        { k: 'cx', time: 'O(n log n)', space: 'O(n)', why: 'The sort dominates; the sweep is one linear pass.' },
-        { k: 'note', tone: 'tip', title: 'Sort by start or by end?', body: '**By start** when merging or combining overlapping ranges. **By end** when maximising how many non-overlapping items you can keep (finishing earliest leaves the most room for the rest). Getting this backwards is the classic interval mistake — say which one you are choosing and why before you write the sort.' },
-        { k: 'list', title: 'The problems', items: [
-          'Merge intervals; insert interval',
-          'Non-overlapping intervals (minimum removals)',
-          'Meeting rooms I (can one person attend all?) and II (how many rooms?)',
-          'Interval list intersections',
-          'Car pooling, my calendar I/II',
-          'Employee free time',
-        ]},
-      ],
-    },
-    /* ---------------------------------------------------------------- */
-    {
       id: 'dsa-trie',
       name: 'Trie (prefix tree)',
       week: 21, mins: 150,
@@ -2726,6 +2529,108 @@ int minMeetingRooms(int[][] intervals) {
           'IP routing and phone-number prefix matching (real-world use)',
         ]},
         { k: 'note', tone: 'tip', title: 'The tell', body: 'If the problem involves **many words and prefix queries**, it is a trie. If it involves many words and only whole-word membership, a HashSet is simpler and faster — say so. Choosing the simpler structure when it suffices is itself a signal.' },
+      ],
+    },
+    /* ---------------------------------------------------------------- */
+    {
+      id: 'dsa-pattern-matching',
+      name: 'Pattern matching — KMP & Rabin-Karp',
+      week: 21, mins: 170,
+      summary: 'Finding a substring in O(n + m) instead of O(n × m). The one genuinely clever classical algorithm you should know.',
+      blocks: [
+        { k: 'p', body: [
+          '"Does this text contain this pattern, and where?" The naive approach tries the pattern at every position and rescans on each mismatch — O(n × m). Two algorithms beat it, by exploiting information the naive version throws away.',
+        ]},
+        { k: 'code', lang: 'java', cap: 'Naive — the baseline, and what it wastes', src: `int naiveSearch(String text, String pattern) {
+    int n = text.length(), m = pattern.length();
+    for (int i = 0; i <= n - m; i++) {
+        int j = 0;
+        while (j < m && text.charAt(i + j) == pattern.charAt(j)) j++;
+        if (j == m) return i;
+        // On mismatch we throw away everything we learned and restart
+        // at i+1 — re-comparing characters we have already seen.
+    }
+    return -1;
+}                                            // O(n * m) worst case` },
+        { k: 'p', title: 'KMP — never re-compare what you already matched', body: [
+          'The insight: if you have matched the first `j` characters of the pattern and then mismatch, you already **know** those `j` characters. If the pattern has a prefix that is also a suffix of what you matched, you can slide the pattern forward to that point instead of restarting.',
+          'That information is precomputed once into an **LPS array** (Longest Proper Prefix which is also a Suffix). Then the text pointer never moves backwards — so the whole scan is O(n).',
+        ]},
+        { k: 'code', lang: 'java', cap: 'KMP', src: `// Build the LPS table: lps[i] = length of the longest proper prefix of
+// pattern[0..i] that is also a suffix of it.
+//   pattern:  a  b  a  b  a  c
+//   lps:      0  0  1  2  3  0
+private int[] buildLps(String p) {
+    int[] lps = new int[p.length()];
+    int len = 0;                             // length of the current match
+    int i = 1;
+
+    while (i < p.length()) {
+        if (p.charAt(i) == p.charAt(len)) {
+            lps[i++] = ++len;
+        } else if (len > 0) {
+            len = lps[len - 1];              // fall back, do NOT advance i
+        } else {
+            lps[i++] = 0;
+        }
+    }
+    return lps;
+}
+
+int kmpSearch(String text, String pattern) {
+    if (pattern.isEmpty()) return 0;
+    int[] lps = buildLps(pattern);
+
+    int i = 0, j = 0;                        // i -> text, j -> pattern
+    while (i < text.length()) {
+        if (text.charAt(i) == pattern.charAt(j)) {
+            i++; j++;
+            if (j == pattern.length()) return i - j;    // full match
+        } else if (j > 0) {
+            j = lps[j - 1];                  // slide the pattern, i STAYS
+        } else {
+            i++;
+        }
+    }
+    return -1;
+}` },
+        { k: 'cx', time: 'O(n + m)', space: 'O(m)', why: 'Building the LPS table is O(m). In the search, `i` only ever increases and `j` only decreases when `i` does not move, so total steps are bounded by 2n. Space is the LPS table.' },
+        { k: 'code', lang: 'java', cap: 'Rabin-Karp — compare hashes, not characters', src: `// Hash the pattern once, then roll a hash across the text. Comparing two
+// ints is O(1); only on a hash match do you verify the actual characters.
+int rabinKarp(String text, String pattern) {
+    int n = text.length(), m = pattern.length();
+    if (m > n) return -1;
+
+    final int BASE = 256, MOD = 1_000_000_007;
+
+    long patternHash = 0, windowHash = 0, highestPower = 1;
+    for (int i = 0; i < m - 1; i++) highestPower = (highestPower * BASE) % MOD;
+
+    for (int i = 0; i < m; i++) {
+        patternHash = (patternHash * BASE + pattern.charAt(i)) % MOD;
+        windowHash  = (windowHash  * BASE + text.charAt(i))    % MOD;
+    }
+
+    for (int i = 0; i <= n - m; i++) {
+        // hash match is only a HINT — different strings can share a hash
+        if (patternHash == windowHash && text.startsWith(pattern, i)) return i;
+
+        if (i < n - m) {
+            // ROLL: drop the leftmost char, add the next one. O(1).
+            windowHash = (windowHash - text.charAt(i) * highestPower % MOD + MOD) % MOD;
+            windowHash = (windowHash * BASE + text.charAt(i + m)) % MOD;
+        }
+    }
+    return -1;
+}` },
+        { k: 'table', title: 'Which one', head: ['', 'KMP', 'Rabin-Karp'], rows: [
+          ['Time', 'O(n + m) guaranteed', 'O(n + m) average, O(n × m) worst'],
+          ['Space', 'O(m)', 'O(1)'],
+          ['Strength', 'Worst-case guarantee', '**Multiple patterns at once** — hash them all into a set'],
+          ['Weakness', 'Fiddly to write under pressure', 'Hash collisions force verification'],
+          ['Use for', 'Single pattern, guaranteed bound', 'Plagiarism detection, many patterns, 2-D search'],
+        ]},
+        { k: 'note', tone: 'tip', title: 'What is actually expected', body: 'Being asked to write KMP cold is rare. Being asked *"how would you find a substring faster than brute force"* is not. The strong answer names both, explains the **one-sentence insight** behind each — KMP reuses the matched prefix so the text pointer never backtracks; Rabin-Karp rolls a hash so each window is O(1) to compare — and notes that `String.indexOf` in the JDK actually uses an optimised naive scan, because for short patterns the constants beat the cleverness.' },
       ],
     },
     /* ---------------------------------------------------------------- */
@@ -2790,6 +2695,101 @@ a = a ^ b;  b = a ^ b;  a = a ^ b;` },
         ]},
         { k: 'note', tone: 'tip', title: 'Where this actually pays off', body: 'Beyond puzzle questions, bitmasks are how you represent "which of these ≤20 things have I used" as a single `int` in DP — travelling salesman, assignment problems. If you see a constraint like `n ≤ 20`, a bitmask DP is very likely the intended solution.' },
       ],
+    },/* ---------------------------------------------------------------- */
+    {
+      id: 'dsa-segment-tree',
+      name: 'Segment tree & Fenwick tree',
+      week: 21, mins: 170,
+      summary: 'Range queries WITH updates, both in O(log n). What prefix sums cannot do.',
+      blocks: [
+        { k: 'p', body: [
+          'Prefix sums answer "sum of the range i..j" in O(1) — but if any element changes you must rebuild the whole array, O(n) per update. If the data changes often, that is unusable.',
+          'A **segment tree** stores aggregates over ranges in a tree, so both query and update are O(log n). A **Fenwick tree** (Binary Indexed Tree) does the same for sums in less code and less memory, at the cost of flexibility.',
+        ]},
+        { k: 'analogy', body: 'A company reporting structure. Asking the CEO for total headcount is instant because every manager keeps a running total for their own branch. When one person joins, you do not recount the company — you walk up that one chain of managers incrementing each total. One path, not the whole org.' },
+        { k: 'table', title: 'Which structure for which job', head: ['Need', 'Structure', 'Query', 'Update'], rows: [
+          ['Range sum, data never changes', 'Prefix sums', 'O(1)', 'O(n) — rebuild'],
+          ['Range sum, frequent updates', '**Fenwick tree**', 'O(log n)', 'O(log n)'],
+          ['Range min/max/gcd, frequent updates', '**Segment tree**', 'O(log n)', 'O(log n)'],
+          ['Range min/max, data never changes', 'Sparse table', 'O(1)', 'not supported'],
+        ]},
+        { k: 'code', lang: 'java', cap: 'Segment tree — array-backed, handles any associative operation', src: `class SegmentTree {
+    private final int[] tree;
+    private final int n;
+
+    // Node i covers a range; its children are 2i+1 and 2i+2.
+    // 4n is the safe size for the array backing (the tree is not always full).
+    SegmentTree(int[] a) {
+        n = a.length;
+        tree = new int[4 * n];
+        build(a, 0, 0, n - 1);
+    }
+
+    private void build(int[] a, int node, int lo, int hi) {
+        if (lo == hi) { tree[node] = a[lo]; return; }    // leaf = one element
+        int mid = lo + (hi - lo) / 2;
+        build(a, 2*node + 1, lo, mid);
+        build(a, 2*node + 2, mid + 1, hi);
+        tree[node] = tree[2*node + 1] + tree[2*node + 2];  // combine children
+    }                                 // ^ swap for Math.min / Math.max / gcd
+
+    int query(int from, int to) { return query(0, 0, n - 1, from, to); }
+
+    private int query(int node, int lo, int hi, int from, int to) {
+        if (to < lo || hi < from) return 0;              // no overlap (identity)
+        if (from <= lo && hi <= to) return tree[node];   // total overlap
+        int mid = lo + (hi - lo) / 2;                     // partial: split
+        return query(2*node + 1, lo, mid, from, to)
+             + query(2*node + 2, mid + 1, hi, from, to);
+    }
+
+    void update(int index, int value) { update(0, 0, n - 1, index, value); }
+
+    private void update(int node, int lo, int hi, int i, int value) {
+        if (lo == hi) { tree[node] = value; return; }
+        int mid = lo + (hi - lo) / 2;
+        if (i <= mid) update(2*node + 1, lo, mid, i, value);
+        else          update(2*node + 2, mid + 1, hi, i, value);
+        tree[node] = tree[2*node + 1] + tree[2*node + 2];   // recompute on the way up
+    }
+}` },
+        { k: 'cx', time: 'O(log n) query and update, O(n) build', space: 'O(n)', why: 'A query touches at most 4 nodes per level across log n levels. Build visits each node once. The 4n array is a safe over-allocation for a non-perfect tree.' },
+        { k: 'code', lang: 'java', cap: 'Fenwick tree — the same thing for sums, in a third of the code', src: `// Each index is responsible for a range whose length is its lowest set bit.
+// i & -i isolates that bit, which is the whole trick.
+class FenwickTree {
+    private final int[] tree;                 // 1-INDEXED internally
+
+    FenwickTree(int n) { tree = new int[n + 1]; }
+
+    /** Add delta at index i (0-based externally). */
+    void update(int i, int delta) {
+        for (i++; i < tree.length; i += i & -i) {   // walk UP the responsibility chain
+            tree[i] += delta;
+        }
+    }
+
+    /** Sum of [0..i] inclusive. */
+    int prefixSum(int i) {
+        int sum = 0;
+        for (i++; i > 0; i -= i & -i) {             // walk DOWN, collecting
+            sum += tree[i];
+        }
+        return sum;
+    }
+
+    int rangeSum(int from, int to) { return prefixSum(to) - prefixSum(from - 1); }
+}` },
+        { k: 'note', tone: 'tip', title: 'What is realistically expected', body: 'For a backend product interview you are unlikely to be asked to implement either from memory. What you *should* be able to do is **recognise the need**: when a question says "range queries with updates", say *"prefix sums give O(1) queries but O(n) updates; if updates are frequent I\'d use a Fenwick tree for sums or a segment tree for min/max, both O(log n) for each operation."* That sentence is the deliverable. Implement it once so the sentence is backed by understanding.' },
+        { k: 'list', title: 'Where it shows up', items: [
+          'Range sum query — mutable (the canonical problem)',
+          'Count of smaller numbers after self',
+          'Range minimum query with updates',
+          'Number of inversions in an array',
+          'My calendar / booking problems with overlap counts',
+          'In real systems: analytics over sliding time ranges, leaderboard rank queries',
+        ]},
+      ],
     },
+    
   ],
 }

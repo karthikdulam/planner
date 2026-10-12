@@ -3,12 +3,12 @@ export const spring = {
   name: 'Spring Boot Internals',
   icon: '🍃',
   blurb: 'Beyond CRUD. What the annotations actually do, why @Transactional silently fails, and where Hibernate destroys your performance.',
-  weeks: 'Weeks 10–17 (evenings)',
+  weeks: 'Weeks 11–17 (evenings)',
   topics: [
     {
       id: 'spring-ioc-di',
       name: 'IoC & dependency injection',
-      week: 10, mins: 140, tag: 'core',
+      week: 11, mins: 140, tag: 'core',
       summary: 'The idea the entire framework is built on.',
       blocks: [
         { k: 'p', body: [
@@ -53,7 +53,7 @@ public class BadService {
     {
       id: 'spring-bean-lifecycle',
       name: 'Bean lifecycle & configuration',
-      week: 10, mins: 120,
+      week: 11, mins: 120,
       summary: 'What happens between startup and your first request.',
       blocks: [
         { k: 'list', ordered: true, title: 'The lifecycle', items: [
@@ -109,7 +109,7 @@ public record PaymentProperties(
     {
       id: 'spring-autoconfiguration',
       name: 'Auto-configuration — how the magic works',
-      week: 11, mins: 110,
+      week: 12, mins: 110,
       summary: 'Why adding a dependency configures your whole app.',
       blocks: [
         { k: 'p', body: [
@@ -144,7 +144,7 @@ public class DataSourceAutoConfiguration {
     {
       id: 'spring-aop',
       name: 'AOP & proxies',
-      week: 11, mins: 140, tag: 'core',
+      week: 12, mins: 140, tag: 'core',
       summary: 'How @Transactional, @Cacheable and @Async work — and why self-calls break them.',
       blocks: [
         { k: 'p', body: [
@@ -201,7 +201,7 @@ public class TimingAspect {
     {
       id: 'spring-rest',
       name: 'REST APIs done properly',
-      week: 12, mins: 140,
+      week: 13, mins: 140,
       summary: 'Status codes, DTOs, versioning — the things that get picked apart in review.',
       blocks: [
         { k: 'code', lang: 'java', cap: 'A controller that would survive review', src: `@RestController
@@ -259,7 +259,7 @@ public class OrderController {
     {
       id: 'spring-validation-errors',
       name: 'Validation & error handling',
-      week: 12, mins: 110,
+      week: 14, mins: 110,
       summary: 'One place for all errors, and consistent responses.',
       blocks: [
         { k: 'code', lang: 'java', cap: 'Bean validation plus a global handler', src: `public record CreateOrderRequest(
@@ -303,7 +303,7 @@ public class GlobalExceptionHandler {
     {
       id: 'spring-transactions',
       name: '@Transactional — propagation & isolation',
-      week: 13, mins: 180, tag: 'core',
+      week: 15, mins: 180, tag: 'core',
       summary: 'The annotation everyone uses and few can explain. Heavily interviewed.',
       blocks: [
         { k: 'p', body: [
@@ -363,7 +363,7 @@ public class PaymentService {
     {
       id: 'spring-jpa',
       name: 'JPA & Hibernate',
-      week: 14, mins: 180, tag: 'core',
+      week: 15, mins: 180, tag: 'core',
       summary: 'The persistence context, entity states, and why saves happen when you did not expect.',
       blocks: [
         { k: 'p', title: 'The persistence context', body: [
@@ -426,7 +426,7 @@ public class Order {
     {
       id: 'spring-n-plus-one',
       name: 'The N+1 problem',
-      week: 17, mins: 140, tag: 'core',
+      week: 15, mins: 140, tag: 'core',
       summary: 'The single most common performance bug in Spring apps. Guaranteed interview question.',
       blocks: [
         { k: 'p', body: [
@@ -483,7 +483,7 @@ logging:
     {
       id: 'spring-security',
       name: 'Spring Security & JWT',
-      week: 15, mins: 170,
+      week: 16, mins: 170,
       summary: 'The filter chain, and stateless authentication done correctly.',
       blocks: [
         { k: 'p', body: [
@@ -533,7 +533,7 @@ public UserDto getUser(@PathVariable Long userId) { ... }` },
     {
       id: 'spring-profiles-actuator',
       name: 'Profiles, config & Actuator',
-      week: 16, mins: 90,
+      week: 17, mins: 90,
       summary: 'Environment separation and production observability.',
       blocks: [
         { k: 'code', lang: 'yaml', cap: 'Profile-based configuration', src: `# application.yml — shared defaults
@@ -583,7 +583,7 @@ spring:
     {
       id: 'spring-testing',
       name: 'Testing Spring applications',
-      week: 16, mins: 120,
+      week: 17, mins: 120,
       summary: 'The pyramid, and the annotations that keep tests fast.',
       blocks: [
         { k: 'code', lang: 'java', cap: 'Three levels, three costs', src: `// 1. UNIT — no Spring at all. Milliseconds. Have hundreds of these.
