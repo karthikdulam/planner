@@ -50,7 +50,7 @@ export function TimelineView() {
         </p>
         <div className="chips">
           <span className="chip week">26 weeks</span>
-          <span className="chip time">14 hrs/week</span>
+          <span className="chip time">15 hrs/week</span>
           <span className="chip core">6 new problems + 3 re-solves weekly</span>
         </div>
       </header>
@@ -159,7 +159,7 @@ export function TimelineView() {
       </section>
 
       <section style={{ marginTop: 44, marginBottom: 40 }}>
-        <h2 style={{ marginBottom: 6 }}>Why this is worth 340 hours</h2>
+        <h2 style={{ marginBottom: 6 }}>Why this is worth 355 hours</h2>
         <p className="muted" style={{ maxWidth: '68ch', marginBottom: 14 }}>
           Ratios rather than figures, so they hold whatever you currently earn.
         </p>

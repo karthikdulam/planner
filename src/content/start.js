@@ -69,7 +69,7 @@ export const start = {
           ['Java & Spring depth', '1', '~15%', 'Home ground, once the internals gap is closed.'],
           ['Hiring manager', '1', '~10%', 'Veto power. Six rehearsed answers fix it entirely.'],
         ]},
-        { k: 'note', tone: 'warn', title: 'The trap', body: 'Do not spread study time across twelve technologies to look complete. Twelve areas at fourteen hours a week means you revisit each one every twelve weeks and retain none. Six areas studied properly beats twelve skimmed, every time, and the interview only tests six.' },
+        { k: 'note', tone: 'warn', title: 'The trap', body: 'Do not spread study time across twelve technologies to look complete. Twelve areas at fifteen hours a week means you revisit each one every twelve weeks and retain none. Six areas studied properly beats twelve skimmed, every time, and the interview only tests six.' },
       ],
     },
     {

@@ -208,7 +208,7 @@ Thanks,
       summary: 'The highest-paid hour of the entire six months.',
       blocks: [
         { k: 'p', body: [
-          'You will spend roughly 340 hours preparing. The negotiation lasts about an hour and typically moves the final number by **5–15%**. Per hour, it is the single most valuable part of this whole process — and most people skip it entirely because it is uncomfortable.',
+          'You will spend roughly 355 hours preparing. The negotiation lasts about an hour and typically moves the final number by **5–15%**. Per hour, it is the single most valuable part of this whole process — and most people skip it entirely because it is uncomfortable.',
         ]},
         { k: 'list', title: 'The rules', items: [
           '**Never name a number first if you can avoid it.** *"I\'d rather understand the full scope and the band for this level first — what range do you have budgeted?"*',

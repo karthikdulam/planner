@@ -2,7 +2,7 @@
 
 An offline-capable study atlas for a **26-week interview preparation block** — Java/Spring backend, targeting product companies. Aimed at working engineers with a few years of experience going after a significant step-up (typically **+40% to +90%** on current compensation).
 
-Thirteen sections, 137 topics, 214 code examples, ordered **by dependency rather than importance** — complexity before DSA, low-level design before system design. Every topic has a plain explanation, a real-life analogy, working code, complexity with the reasoning, and the questions interviewers actually ask.
+Thirteen sections, 145 topics, 236 code examples, ordered **by dependency rather than importance** — complexity before DSA, low-level design before system design. Every topic has a plain explanation, a real-life analogy, working code, complexity with the reasoning, and the questions interviewers actually ask.
 
 Built for **learning to code well**, not only for passing interviews: the data structures are implemented from scratch (heap, hash map, union-find, merge sort, quicksort) rather than only called, because the ideas inside them — divide-and-conquer, partitioning, hashing, amortised cost — are tools you reach for in real work.
 

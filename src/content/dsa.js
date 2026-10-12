@@ -61,9 +61,92 @@ void reverse(int[] a) {
     },
     /* ---------------------------------------------------------------- */
     {
+      id: 'dsa-searching',
+      name: 'Searching — linear search & the baseline',
+      week: 1, mins: 120,
+      summary: 'The simplest algorithm there is, and the one you must be able to argue FOR. Linear search is not always the wrong answer.',
+      blocks: [
+        { k: 'p', body: [
+          'Linear search walks the collection from the start and stops when it finds the target. That is the whole algorithm. It is the baseline every other search is measured against — and the one candidates dismiss too fast.',
+          'It gets asked precisely because the interesting question is not *how* it works, it is **when it beats binary search**. Answering that well signals you think about real costs rather than reciting Big-O.',
+        ]},
+        { k: 'analogy', body: 'Looking for a friend in an unsorted crowd: you check faces one by one, because there is no order to exploit. Binary search is finding a name in a phone book — but only because the book is already sorted. Someone has to pay for that sorting, and if you are only looking once, you pay more for the sort than you save on the search.' },
+        { k: 'code', lang: 'java', cap: 'Linear search, and the variants worth knowing', src: `// The basic form — works on ANY array, sorted or not.
+int linearSearch(int[] a, int target) {
+    for (int i = 0; i < a.length; i++) {
+        if (a[i] == target) return i;       // first occurrence
+    }
+    return -1;                               // not found
+}
+
+// Objects: use equals(), not ==, or you compare references
+int indexOf(String[] a, String target) {
+    for (int i = 0; i < a.length; i++) {
+        if (Objects.equals(a[i], target)) return i;   // null-safe
+    }
+    return -1;
+}
+
+// SENTINEL linear search: place the target at the end so the loop needs
+// only ONE comparison per step instead of two (bounds check + value check).
+// Roughly 2x fewer comparisons. A real micro-optimisation, rarely needed,
+// but it shows you understand what the loop actually costs.
+int sentinelSearch(int[] a, int target) {
+    int n = a.length;
+    int last = a[n - 1];
+    a[n - 1] = target;                       // the sentinel guarantees a hit
+
+    int i = 0;
+    while (a[i] != target) i++;              // no bounds check needed
+
+    a[n - 1] = last;                         // restore
+    if (i < n - 1 || last == target) return i;
+    return -1;
+}
+
+// Find ALL matches, not just the first
+List<Integer> findAll(int[] a, int target) {
+    List<Integer> hits = new ArrayList<>();
+    for (int i = 0; i < a.length; i++) if (a[i] == target) hits.add(i);
+    return hits;
+}` },
+        { k: 'cx', time: 'O(n)', space: 'O(1)', why: 'Worst case touches every element; best case is the first element, O(1). Nothing is allocated. Average is n/2 comparisons, which is still O(n).' },
+        { k: 'table', title: 'Linear vs binary — the comparison you will be asked for', head: ['', 'Linear search', 'Binary search'], rows: [
+          ['Needs sorted input', '**No**', 'Yes'],
+          ['Time', 'O(n)', 'O(log n)'],
+          ['Searching once on unsorted data', '**O(n) — wins**', 'O(n log n) to sort first, then log n'],
+          ['Searching many times', 'O(n) each — loses', 'Sort once, then O(log n) each — wins'],
+          ['Linked list', '**Only option**', 'Impossible — no random access'],
+          ['Very small n (say < 20)', '**Often faster in practice**', 'Branch misprediction costs more than it saves'],
+          ['Memory access pattern', '**Sequential — cache friendly**', 'Jumps around — cache hostile'],
+        ]},
+        { k: 'note', tone: 'tip', title: 'The answer that scores', body: '*"If the data is unsorted and I am searching once, linear is actually optimal — sorting first costs O(n log n), which is worse than the O(n) scan I was trying to avoid. Binary search only pays off when the data is already sorted, or when I will search many times and can amortise the sort. And on small arrays linear often wins outright because it is sequential and cache-friendly."* That reasoning is worth far more than knowing binary search is faster.' },
+        { k: 'code', lang: 'java', cap: 'What the library gives you', src: `List<String> list = List.of("a", "b", "c");
+list.contains("b");                      // LINEAR scan — O(n)
+list.indexOf("b");                       // LINEAR — O(n)
+
+Set<String> set = Set.of("a", "b", "c");
+set.contains("b");                       // HASH lookup — O(1)
+
+int[] sorted = {1, 3, 5, 7, 9};
+Arrays.binarySearch(sorted, 5);          // O(log n) — array MUST be sorted
+// On an unsorted array the result is UNDEFINED. Not an exception — a
+// wrong answer, silently. This is a real production bug.
+
+Arrays.stream(a).anyMatch(x -> x == target);     // linear, short-circuits
+Arrays.stream(a).filter(x -> x > 5).findFirst(); // linear, lazy` },
+        { k: 'note', tone: 'trap', title: 'The silent failure', body: '`Arrays.binarySearch` on an **unsorted** array does not throw — it returns a meaningless index or a negative insertion point. The bug is invisible until someone notices the lookups are wrong. If you cannot guarantee sortedness, either sort explicitly or use a linear scan or a HashSet.' },
+        { k: 'qa', title: 'Asked in interviews', items: [
+          { q: 'Can you search faster than O(n) on unsorted data?', a: 'Not by comparison alone — with no ordering, any element could be the target, so you must be prepared to look at all n. You can beat it by changing the data structure rather than the algorithm: build a HashSet once for O(1) lookups, or sort once for O(log n) lookups. Both move the cost up front, which only pays off across many queries.' },
+          { q: 'How would you find the kth smallest element?', a: 'Sorting gives O(n log n). A max-heap of size k gives O(n log k). **Quickselect** gives O(n) average, by partitioning and recursing into only the side containing the answer. Quickselect is the strongest answer and it comes straight from having written `partition` for quicksort.' },
+        ]},
+      ],
+    },
+    /* ---------------------------------------------------------------- */
+    {
       id: 'dsa-prefix-sum',
       name: 'Prefix sums',
-      week: 1, mins: 150,
+      week: 2, mins: 150,
       summary: 'Precompute once, then answer any range-sum question in O(1).',
       blocks: [
         { k: 'p', body: [
@@ -106,6 +189,72 @@ int subarraySum(int[] a, int k) {
           '**2-D prefix sums** — for rectangle sums in a matrix. Same idea, inclusion-exclusion on four corners.',
           '**Difference array** — the inverse: range *updates* in O(1), one final pass to materialise.',
         ]},
+      ],
+    },
+    /* ---------------------------------------------------------------- */
+    {
+      id: 'dsa-cyclic-sort',
+      name: 'Cyclic sort',
+      week: 2, mins: 130,
+      summary: 'When the values are 1..n, the value tells you where it belongs. Solves a whole family of "find the missing number" problems in O(n) time, O(1) space.',
+      blocks: [
+        { k: 'p', body: [
+          'A small, very recognisable pattern. Whenever the input is **n numbers drawn from the range 1..n** (or 0..n-1), each value has a natural home index — and you can sort by repeatedly swapping each value to its home in one pass.',
+          'The payoff is that "find the missing number", "find the duplicate", "find all missing" and "find the first positive missing" all collapse to: sort cyclically, then scan for the first index whose value is wrong.',
+        ]},
+        { k: 'analogy', body: 'A cloakroom where every coat has its own numbered peg. You pick up whatever coat is in front of you, walk it to its own peg, and pick up whatever was already hanging there. Repeat. Every coat is moved at most once, and when you stop, any empty peg is a missing coat.' },
+        { k: 'code', lang: 'java', cap: 'The pattern itself', src: `// Values are 1..n, so value v belongs at index v-1.
+void cyclicSort(int[] a) {
+    int i = 0;
+    while (i < a.length) {
+        int home = a[i] - 1;                 // where a[i] SHOULD live
+        if (a[i] != a[home]) {
+            swap(a, i, home);                // send it home, do NOT advance
+        } else {
+            i++;                              // already correct (or a duplicate)
+        }
+    }
+}
+// Note: compare a[i] != a[home], NOT i != home. Comparing VALUES makes it
+// terminate correctly when duplicates exist — otherwise two equal values
+// bounce forever.` },
+        { k: 'cx', time: 'O(n)', space: 'O(1)', why: 'The while loop looks like it could repeat, but every swap places at least one value permanently at its home, so there are at most n swaps in total plus n index advances.' },
+        { k: 'code', lang: 'java', cap: 'The four problems it unlocks', src: `// 1. MISSING NUMBER (0..n, one missing)
+int missingNumber(int[] a) {
+    cyclicSort(a);
+    for (int i = 0; i < a.length; i++) if (a[i] != i + 1) return i + 1;
+    return a.length + 1;
+}
+
+// 2. FIND THE DUPLICATE (n+1 numbers in 1..n)
+int findDuplicate(int[] a) {
+    cyclicSort(a);
+    for (int i = 0; i < a.length; i++) if (a[i] != i + 1) return a[i];
+    return -1;
+}
+
+// 3. ALL NUMBERS DISAPPEARED
+List<Integer> findDisappeared(int[] a) {
+    cyclicSort(a);
+    List<Integer> out = new ArrayList<>();
+    for (int i = 0; i < a.length; i++) if (a[i] != i + 1) out.add(i + 1);
+    return out;
+}
+
+// 4. FIRST MISSING POSITIVE (the hard one — values can be anything)
+int firstMissingPositive(int[] a) {
+    int n = a.length;
+    int i = 0;
+    while (i < n) {
+        int home = a[i] - 1;
+        // only place values that actually fall in 1..n; ignore the rest
+        if (a[i] > 0 && a[i] <= n && a[i] != a[home]) swap(a, i, home);
+        else i++;
+    }
+    for (int j = 0; j < n; j++) if (a[j] != j + 1) return j + 1;
+    return n + 1;
+}` },
+        { k: 'note', tone: 'tip', title: 'The tell, and the alternatives', body: 'The giveaway is a constraint like **"an array of n integers where each is in the range 1 to n"**. That phrasing is almost never incidental. Two alternatives worth naming: **XOR** (missing number = XOR of all indices XOR all values, O(1) space, but does not extend to duplicates) and **sum formula** (n(n+1)/2 minus the actual sum — elegant, but overflows on large n). Cyclic sort handles the whole family without either caveat.' },
       ],
     },
     /* ---------------------------------------------------------------- */
@@ -304,9 +453,332 @@ for (int x : nums) {
     },
     /* ---------------------------------------------------------------- */
     {
+      id: 'dsa-strings',
+      name: 'Strings',
+      week: 4, mins: 220, tag: 'core',
+      summary: 'Immutability, the StringBuilder trap, and the manipulation techniques behind a third of all interview problems.',
+      blocks: [
+        { k: 'p', title: 'The one fact everything follows from', body: [
+          'In Java a `String` is **immutable**. Every operation that looks like a modification — `concat`, `substring`, `replace`, `toUpperCase` — returns a *new* String and leaves the original untouched.',
+          'That is what makes Strings safe to share, safe as map keys, and safe across threads. It is also what makes naive string building quadratic, which is the most common performance bug in this topic.',
+        ]},
+        { k: 'code', lang: 'java', cap: 'The quadratic trap — know why, not just that', src: `// BAD: O(n^2). Each += allocates a NEW string and copies everything
+// built so far. Building 100,000 characters copies ~5 BILLION characters.
+String result = "";
+for (String word : words) {
+    result += word;          // allocate + copy the whole accumulated string
+}
+
+// GOOD: O(n). StringBuilder keeps a resizable char array and appends in
+// place, doubling the array occasionally — amortised O(1) per append.
+StringBuilder sb = new StringBuilder();
+for (String word : words) {
+    sb.append(word);
+}
+String result2 = sb.toString();
+
+// StringBuilder vs StringBuffer: identical API. StringBuffer is
+// synchronised, so it is slower and you almost never want it — a
+// builder is nearly always local to one method, and therefore already
+// confined to one thread.
+
+// The compiler DOES optimise simple concatenation outside loops:
+String greeting = "Hello, " + name + "!";   // becomes a StringBuilder
+// but it CANNOT do that across loop iterations — hence the trap above.` },
+        { k: 'cx', time: 'O(n) with StringBuilder, O(n²) with +=', space: 'O(n)', why: 'Each `+=` copies the whole accumulated string, so total work is 1+2+3+…+n = n²/2. StringBuilder appends into a doubling array, amortised O(1) each.' },
+        { k: 'code', lang: 'java', cap: 'The techniques that solve most string problems', src: `// 1. CHARACTER COUNTING — int[26] beats a HashMap for lowercase ASCII
+boolean isAnagram(String s, String t) {
+    if (s.length() != t.length()) return false;
+    int[] counts = new int[26];
+    for (int i = 0; i < s.length(); i++) {
+        counts[s.charAt(i) - 'a']++;         // char arithmetic gives the index
+        counts[t.charAt(i) - 'a']--;
+    }
+    for (int c : counts) if (c != 0) return false;
+    return true;
+}                                             // O(n) time, O(1) space
+
+// 2. TWO POINTERS FROM THE ENDS — palindromes
+boolean isPalindrome(String s) {
+    int lo = 0, hi = s.length() - 1;
+    while (lo < hi) {
+        while (lo < hi && !Character.isLetterOrDigit(s.charAt(lo))) lo++;
+        while (lo < hi && !Character.isLetterOrDigit(s.charAt(hi))) hi--;
+        if (Character.toLowerCase(s.charAt(lo)) != Character.toLowerCase(s.charAt(hi)))
+            return false;
+        lo++; hi--;
+    }
+    return true;
+}
+
+// 3. EXPAND AROUND CENTRE — longest palindromic substring, O(n^2)
+String longestPalindrome(String s) {
+    if (s.isEmpty()) return "";
+    int start = 0, maxLen = 1;
+    for (int centre = 0; centre < s.length(); centre++) {
+        int len = Math.max(expand(s, centre, centre),      // odd length
+                           expand(s, centre, centre + 1)); // even length
+        if (len > maxLen) {
+            maxLen = len;
+            start = centre - (len - 1) / 2;
+        }
+    }
+    return s.substring(start, start + maxLen);
+}
+private int expand(String s, int lo, int hi) {
+    while (lo >= 0 && hi < s.length() && s.charAt(lo) == s.charAt(hi)) { lo--; hi++; }
+    return hi - lo - 1;
+}
+
+// 4. BUILD IN REVERSE, or use the builder's reverse
+String reverseWords(String s) {
+    String[] parts = s.trim().split("\\\\s+");
+    Collections.reverse(Arrays.asList(parts));
+    return String.join(" ", parts);
+}` },
+        { k: 'table', title: 'String methods worth having at your fingertips', head: ['Method', 'Note'], rows: [
+          ['`charAt(i)`', 'O(1). Prefer over `toCharArray()` when you only read.'],
+          ['`toCharArray()`', 'Allocates a copy — use when you need to mutate'],
+          ['`substring(a, b)`', '**O(n) since Java 7** — it copies. It used to share the backing array.'],
+          ['`split(regex)`', 'Takes a **regex**, not a literal. `split(".")` matches everything — escape it.'],
+          ['`equals` vs `==`', '`==` compares references. Interned literals may look equal by accident.'],
+          ['`isBlank()` / `strip()`', 'Java 11+. Unicode-aware, unlike `trim()`.'],
+          ['`chars()`', 'An `IntStream` of code points — handy for counting'],
+          ['`String.join` / `repeat`', 'Cleaner than manual loops'],
+        ]},
+        { k: 'note', tone: 'trap', title: 'Three that catch people', body: '**(1)** `substring` is **O(n)**, not O(1) — calling it inside a loop quietly makes the loop quadratic. **(2)** `split` takes a regex: `"a.b".split(".")` returns an empty array, you need `split("\\\\.")`. **(3)** `s1 == s2` sometimes works because the compiler interns string literals into a shared pool, so it passes in testing and fails on strings built at runtime. Always `equals`.' },
+        { k: 'list', title: 'The problems', items: [
+          'Valid anagram, group anagrams, valid palindrome',
+          'Longest substring without repeating characters (sliding window)',
+          'Longest palindromic substring / subsequence',
+          'String compression, reverse words, first unique character',
+          'Valid parentheses (stack), decode string',
+          'Roman to integer, integer to Roman, atoi',
+          'Longest common prefix, isomorphic strings, word pattern',
+        ]},
+      ],
+    },
+    /* ---------------------------------------------------------------- */
+    {
+      id: 'dsa-pattern-matching',
+      name: 'Pattern matching — KMP & Rabin-Karp',
+      week: 5, mins: 170,
+      summary: 'Finding a substring in O(n + m) instead of O(n × m). The one genuinely clever classical algorithm you should know.',
+      blocks: [
+        { k: 'p', body: [
+          '"Does this text contain this pattern, and where?" The naive approach tries the pattern at every position and rescans on each mismatch — O(n × m). Two algorithms beat it, by exploiting information the naive version throws away.',
+        ]},
+        { k: 'code', lang: 'java', cap: 'Naive — the baseline, and what it wastes', src: `int naiveSearch(String text, String pattern) {
+    int n = text.length(), m = pattern.length();
+    for (int i = 0; i <= n - m; i++) {
+        int j = 0;
+        while (j < m && text.charAt(i + j) == pattern.charAt(j)) j++;
+        if (j == m) return i;
+        // On mismatch we throw away everything we learned and restart
+        // at i+1 — re-comparing characters we have already seen.
+    }
+    return -1;
+}                                            // O(n * m) worst case` },
+        { k: 'p', title: 'KMP — never re-compare what you already matched', body: [
+          'The insight: if you have matched the first `j` characters of the pattern and then mismatch, you already **know** those `j` characters. If the pattern has a prefix that is also a suffix of what you matched, you can slide the pattern forward to that point instead of restarting.',
+          'That information is precomputed once into an **LPS array** (Longest Proper Prefix which is also a Suffix). Then the text pointer never moves backwards — so the whole scan is O(n).',
+        ]},
+        { k: 'code', lang: 'java', cap: 'KMP', src: `// Build the LPS table: lps[i] = length of the longest proper prefix of
+// pattern[0..i] that is also a suffix of it.
+//   pattern:  a  b  a  b  a  c
+//   lps:      0  0  1  2  3  0
+private int[] buildLps(String p) {
+    int[] lps = new int[p.length()];
+    int len = 0;                             // length of the current match
+    int i = 1;
+
+    while (i < p.length()) {
+        if (p.charAt(i) == p.charAt(len)) {
+            lps[i++] = ++len;
+        } else if (len > 0) {
+            len = lps[len - 1];              // fall back, do NOT advance i
+        } else {
+            lps[i++] = 0;
+        }
+    }
+    return lps;
+}
+
+int kmpSearch(String text, String pattern) {
+    if (pattern.isEmpty()) return 0;
+    int[] lps = buildLps(pattern);
+
+    int i = 0, j = 0;                        // i -> text, j -> pattern
+    while (i < text.length()) {
+        if (text.charAt(i) == pattern.charAt(j)) {
+            i++; j++;
+            if (j == pattern.length()) return i - j;    // full match
+        } else if (j > 0) {
+            j = lps[j - 1];                  // slide the pattern, i STAYS
+        } else {
+            i++;
+        }
+    }
+    return -1;
+}` },
+        { k: 'cx', time: 'O(n + m)', space: 'O(m)', why: 'Building the LPS table is O(m). In the search, `i` only ever increases and `j` only decreases when `i` does not move, so total steps are bounded by 2n. Space is the LPS table.' },
+        { k: 'code', lang: 'java', cap: 'Rabin-Karp — compare hashes, not characters', src: `// Hash the pattern once, then roll a hash across the text. Comparing two
+// ints is O(1); only on a hash match do you verify the actual characters.
+int rabinKarp(String text, String pattern) {
+    int n = text.length(), m = pattern.length();
+    if (m > n) return -1;
+
+    final int BASE = 256, MOD = 1_000_000_007;
+
+    long patternHash = 0, windowHash = 0, highestPower = 1;
+    for (int i = 0; i < m - 1; i++) highestPower = (highestPower * BASE) % MOD;
+
+    for (int i = 0; i < m; i++) {
+        patternHash = (patternHash * BASE + pattern.charAt(i)) % MOD;
+        windowHash  = (windowHash  * BASE + text.charAt(i))    % MOD;
+    }
+
+    for (int i = 0; i <= n - m; i++) {
+        // hash match is only a HINT — different strings can share a hash
+        if (patternHash == windowHash && text.startsWith(pattern, i)) return i;
+
+        if (i < n - m) {
+            // ROLL: drop the leftmost char, add the next one. O(1).
+            windowHash = (windowHash - text.charAt(i) * highestPower % MOD + MOD) % MOD;
+            windowHash = (windowHash * BASE + text.charAt(i + m)) % MOD;
+        }
+    }
+    return -1;
+}` },
+        { k: 'table', title: 'Which one', head: ['', 'KMP', 'Rabin-Karp'], rows: [
+          ['Time', 'O(n + m) guaranteed', 'O(n + m) average, O(n × m) worst'],
+          ['Space', 'O(m)', 'O(1)'],
+          ['Strength', 'Worst-case guarantee', '**Multiple patterns at once** — hash them all into a set'],
+          ['Weakness', 'Fiddly to write under pressure', 'Hash collisions force verification'],
+          ['Use for', 'Single pattern, guaranteed bound', 'Plagiarism detection, many patterns, 2-D search'],
+        ]},
+        { k: 'note', tone: 'tip', title: 'What is actually expected', body: 'Being asked to write KMP cold is rare. Being asked *"how would you find a substring faster than brute force"* is not. The strong answer names both, explains the **one-sentence insight** behind each — KMP reuses the matched prefix so the text pointer never backtracks; Rabin-Karp rolls a hash so each window is O(1) to compare — and notes that `String.indexOf` in the JDK actually uses an optimised naive scan, because for short patterns the constants beat the cleverness.' },
+      ],
+    },
+    /* ---------------------------------------------------------------- */
+    {
+      id: 'dsa-matrix',
+      name: 'Matrix & 2-D arrays',
+      week: 5, mins: 160,
+      summary: 'Index gymnastics. Rotation, spiral traversal, in-place tricks — all about getting the arithmetic right.',
+      blocks: [
+        { k: 'p', body: [
+          '2-D problems rarely need a clever algorithm. They need **correct index arithmetic**, done calmly, usually in place. The reliable technique is to write one concrete small example on paper and read the transformation off it rather than deriving it in your head.',
+        ]},
+        { k: 'code', lang: 'java', cap: 'Rotate 90° clockwise, in place — transpose then reverse', src: `// The trick: a 90-degree rotation = TRANSPOSE (flip over the diagonal),
+// then REVERSE each row. Much easier to get right than a four-way swap.
+//
+//   1 2 3      transpose     1 4 7     reverse rows    7 4 1
+//   4 5 6   ------------->   2 5 8   -------------->   8 5 2
+//   7 8 9                    3 6 9                     9 6 3
+void rotate(int[][] m) {
+    int n = m.length;
+
+    // 1. transpose — only the upper triangle, or you undo your own work
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {        // note: j starts at i+1
+            int tmp = m[i][j]; m[i][j] = m[j][i]; m[j][i] = tmp;
+        }
+    }
+    // 2. reverse each row
+    for (int[] row : m) {
+        for (int lo = 0, hi = n - 1; lo < hi; lo++, hi--) {
+            int tmp = row[lo]; row[lo] = row[hi]; row[hi] = tmp;
+        }
+    }
+}
+// Anticlockwise: transpose, then reverse each COLUMN instead.` },
+        { k: 'code', lang: 'java', cap: 'Spiral traversal — four shrinking boundaries', src: `List<Integer> spiralOrder(int[][] m) {
+    List<Integer> out = new ArrayList<>();
+    if (m.length == 0) return out;
+
+    int top = 0, bottom = m.length - 1;
+    int left = 0, right = m[0].length - 1;
+
+    while (top <= bottom && left <= right) {
+        for (int c = left; c <= right; c++) out.add(m[top][c]);      // →
+        top++;
+
+        for (int r = top; r <= bottom; r++) out.add(m[r][right]);    // ↓
+        right--;
+
+        if (top <= bottom) {                   // guard: avoid re-reading a
+            for (int c = right; c >= left; c--) out.add(m[bottom][c]); // ←
+            bottom--;                          // single remaining row
+        }
+        if (left <= right) {                   // guard: single column
+            for (int r = bottom; r >= top; r--) out.add(m[r][left]);  // ↑
+            left++;
+        }
+    }
+    return out;
+}` },
+        { k: 'note', tone: 'trap', title: 'Why those two guards exist', body: 'Without the `if (top <= bottom)` and `if (left <= right)` checks, a matrix with a single remaining row or column gets traversed **twice** — once going right, once coming back left. It passes on square matrices and fails on `1×n` or `n×1`. Always test a single-row input.' },
+        { k: 'code', lang: 'java', cap: 'Two more that come up constantly', src: `// SET MATRIX ZEROES in O(1) space: use the first row and column as the
+// marker storage, with one extra flag for the first column itself.
+void setZeroes(int[][] m) {
+    boolean firstColHasZero = false;
+    int rows = m.length, cols = m[0].length;
+
+    for (int r = 0; r < rows; r++) {
+        if (m[r][0] == 0) firstColHasZero = true;
+        for (int c = 1; c < cols; c++) {
+            if (m[r][c] == 0) { m[r][0] = 0; m[0][c] = 0; }   // mark
+        }
+    }
+    for (int r = rows - 1; r >= 0; r--) {       // BACKWARDS, so the markers
+        for (int c = cols - 1; c >= 1; c--) {   // are read before overwritten
+            if (m[r][0] == 0 || m[0][c] == 0) m[r][c] = 0;
+        }
+        if (firstColHasZero) m[r][0] = 0;
+    }
+}
+
+// SEARCH A SORTED MATRIX (rows sorted, each row starts after the previous
+// ends): treat it as ONE sorted array of length rows*cols. O(log(r*c)).
+boolean searchMatrix(int[][] m, int target) {
+    int rows = m.length, cols = m[0].length;
+    int lo = 0, hi = rows * cols - 1;
+    while (lo <= hi) {
+        int mid = lo + (hi - lo) / 2;
+        int value = m[mid / cols][mid % cols];   // 1-D index -> 2-D
+        if (value == target) return true;
+        if (value < target) lo = mid + 1; else hi = mid - 1;
+    }
+    return false;
+}
+
+// STAIRCASE SEARCH (rows AND columns sorted, but rows do not chain):
+// start top-right. Too big -> move left. Too small -> move down. O(r + c).
+boolean searchMatrixII(int[][] m, int target) {
+    int r = 0, c = m[0].length - 1;
+    while (r < m.length && c >= 0) {
+        if (m[r][c] == target) return true;
+        if (m[r][c] > target) c--; else r++;
+    }
+    return false;
+}` },
+        { k: 'cx', time: 'O(rows × cols)', space: 'O(1) for the in-place versions', why: 'Every cell is visited a constant number of times. Note this is **not** O(n²) — rows and cols are independent dimensions, so keep both letters.' },
+        { k: 'list', title: 'The problems', items: [
+          'Rotate image, spiral matrix I & II, transpose',
+          'Set matrix zeroes, game of life (in place)',
+          'Search a 2-D matrix I & II',
+          'Number of islands, flood fill, rotting oranges (these are BFS/DFS on a grid)',
+          'Diagonal traverse, Pascal\'s triangle',
+          'Word search (backtracking on a grid)',
+        ]},
+      ],
+    },
+    /* ---------------------------------------------------------------- */
+    {
       id: 'dsa-binary-search',
       name: 'Binary search',
-      week: 4, mins: 240, tag: 'core',
+      week: 6, mins: 240, tag: 'core',
       summary: 'Halve the search space every step. Simple idea, brutal off-by-one traps.',
       blocks: [
         { k: 'p', body: [
@@ -356,7 +828,7 @@ int countOf(int[] a, int target) {
     {
       id: 'dsa-bs-on-answer',
       name: 'Binary search on the answer',
-      week: 5, mins: 200,
+      week: 6, mins: 200,
       summary: 'When the array is not what you search — the answer itself is.',
       blocks: [
         { k: 'p', body: [
@@ -407,7 +879,7 @@ private boolean canShip(int[] weights, int capacity, int days) {
     {
       id: 'dsa-sorting',
       name: 'Sorting — implemented',
-      week: 6, mins: 260, tag: 'core',
+      week: 7, mins: 260, tag: 'core',
       summary: 'Write merge sort and quicksort by hand. Divide-and-conquer and partitioning are reusable tools, not just sorting trivia.',
       blocks: [
         { k: 'p', body: [
@@ -563,9 +1035,110 @@ words.sort(Comparator.comparingInt(String::length).reversed());  // safer` },
     },
     /* ---------------------------------------------------------------- */
     {
+      id: 'dsa-math',
+      name: 'Maths & number theory',
+      week: 8, mins: 180,
+      summary: 'GCD, primes, modular arithmetic, fast exponentiation, overflow. A small toolkit — and none of it is hard maths.',
+      blocks: [
+        { k: 'p', body: [
+          'A handful of numeric techniques show up often enough to be worth knowing cold. None of them require mathematical background — each is a short algorithm with a one-line reason it works.',
+        ]},
+        { k: 'code', lang: 'java', cap: 'GCD and LCM — Euclid\'s algorithm', src: `// The whole insight: gcd(a, b) == gcd(b, a mod b).
+// Any common divisor of a and b also divides their remainder, so the
+// problem shrinks fast — it is O(log(min(a,b))).
+int gcd(int a, int b) {
+    while (b != 0) {
+        int tmp = b;
+        b = a % b;
+        a = tmp;
+    }
+    return a;
+}
+
+int gcdRecursive(int a, int b) { return b == 0 ? a : gcdRecursive(b, a % b); }
+
+// LCM via GCD. Divide FIRST to avoid overflowing on the multiply.
+long lcm(int a, int b) { return (long) a / gcd(a, b) * b; }
+
+// Java has it built in for BigInteger, and for int since Java 9 there is
+// Math.floorMod for the modulo-sign problem below.` },
+        { k: 'code', lang: 'java', cap: 'Primes — trial division and the Sieve', src: `// ONE number: test divisors up to sqrt(n). Any factor above sqrt(n)
+// has a partner below it, so there is nothing new above the root.
+boolean isPrime(int n) {
+    if (n < 2) return false;
+    if (n % 2 == 0) return n == 2;
+    for (int i = 3; (long) i * i <= n; i += 2) {   // odds only
+        if (n % i == 0) return false;
+    }
+    return true;
+}                                                   // O(sqrt n)
+
+// ALL primes up to n: Sieve of Eratosthenes. Mark multiples of each
+// prime as composite. Start marking at i*i — smaller multiples were
+// already marked by a smaller prime.
+boolean[] sieve(int n) {
+    boolean[] composite = new boolean[n + 1];
+    for (int i = 2; (long) i * i <= n; i++) {
+        if (!composite[i]) {
+            for (long j = (long) i * i; j <= n; j += i) composite[(int) j] = true;
+        }
+    }
+    return composite;                               // !composite[k] => k is prime
+}                                                    // O(n log log n)` },
+        { k: 'cx', time: 'O(√n) single, O(n log log n) sieve', space: 'O(1) / O(n)', why: 'Trial division stops at the square root. The sieve\'s cost is the sum of n/p over all primes p ≤ n, which converges to n log log n — effectively linear.' },
+        { k: 'code', lang: 'java', cap: 'Fast exponentiation — O(log n) instead of O(n)', src: `// a^n by squaring: a^10 = (a^5)^2, a^5 = a * (a^2)^2.
+// Halving the exponent each step gives log n multiplications.
+long power(long base, long exp, long mod) {
+    long result = 1;
+    base %= mod;
+
+    while (exp > 0) {
+        if ((exp & 1) == 1) result = result * base % mod;   // odd bit -> multiply
+        base = base * base % mod;                           // square
+        exp >>= 1;                                           // halve
+    }
+    return result;
+}
+// 2^1000000007 in ~30 multiplications instead of a billion.
+// This is the core of RSA and of every "answer modulo 1e9+7" problem.` },
+        { k: 'code', lang: 'java', cap: 'Overflow and the negative-modulo trap', src: `// OVERFLOW: int silently wraps. There is no exception.
+int big = Integer.MAX_VALUE;
+big + 1;                           // -2147483648  — silently wrong
+
+// Three defences:
+(long) a * b;                      // widen BEFORE multiplying, not after
+Math.addExact(a, b);               // throws ArithmeticException on overflow
+lo + (hi - lo) / 2;                // the binary-search midpoint idiom
+
+// NEGATIVE MODULO: in Java, % returns the sign of the DIVIDEND.
+-7 % 3;                            // -1   (many languages give 2)
+Math.floorMod(-7, 3);              // 2    — what you usually want
+
+// Normalising by hand:
+int mod(int a, int m) { return ((a % m) + m) % m; }
+
+// MONEY: never double. 0.1 + 0.2 != 0.3 in binary floating point.
+BigDecimal amount = new BigDecimal("0.1").add(new BigDecimal("0.2"));
+// and compare with compareTo, not equals — equals also compares scale,
+// so 1.0 and 1.00 are "not equal".` },
+        { k: 'note', tone: 'trap', title: 'The three that cost people the question', body: '**(1)** `(a + b) / 2` overflows on large ints — use `lo + (hi - lo) / 2`. **(2)** `%` on a negative number returns negative in Java — use `Math.floorMod` when you need a non-negative index, which bites in hashing and circular-array problems. **(3)** `int` multiplication overflows *before* assignment to a `long`, so `long x = a * b;` is still wrong — you must cast one operand first.' },
+        { k: 'list', title: 'The problems', items: [
+          'Count primes, happy number, ugly number',
+          'Power of two / three / four (bit tricks or logs)',
+          'Pow(x, n) — fast exponentiation, watch the negative exponent',
+          'Sqrt(x) — binary search on the answer',
+          'Excel column number, Roman numerals, add digits',
+          'Reverse integer, palindrome number (both overflow traps)',
+          'Factorial trailing zeroes (count factors of 5)',
+          'Fraction to recurring decimal',
+        ]},
+      ],
+    },
+    /* ---------------------------------------------------------------- */
+    {
       id: 'dsa-stack',
       name: 'Stack',
-      week: 7, mins: 180, tag: 'core',
+      week: 8, mins: 180, tag: 'core',
       summary: 'Last in, first out. The pattern for matching, nesting and undo.',
       blocks: [
         { k: 'p', body: [
@@ -602,7 +1175,7 @@ words.sort(Comparator.comparingInt(String::length).reversed());  // safer` },
     {
       id: 'dsa-monotonic-stack',
       name: 'Monotonic stack',
-      week: 7, mins: 200,
+      week: 9, mins: 200,
       summary: 'A stack kept in sorted order. Solves "next greater element" in O(n).',
       blocks: [
         { k: 'p', body: [
@@ -657,7 +1230,7 @@ int[] dailyTemperatures(int[] t) {
     {
       id: 'dsa-queue-deque',
       name: 'Queue & deque',
-      week: 8, mins: 180,
+      week: 9, mins: 180,
       summary: 'First in, first out — plus the double-ended version that powers sliding-window maximum.',
       blocks: [
         { k: 'p', body: [
@@ -699,7 +1272,7 @@ int[] maxSlidingWindow(int[] a, int k) {
     {
       id: 'dsa-linked-list',
       name: 'Linked list',
-      week: 8, mins: 220, tag: 'core',
+      week: 10, mins: 220, tag: 'core',
       summary: 'Pointer surgery. Loved by interviewers because it is impossible to fake.',
       blocks: [
         { k: 'p', body: [
@@ -766,7 +1339,7 @@ ListNode middle(ListNode head) {
     {
       id: 'dsa-recursion',
       name: 'Recursion',
-      week: 9, mins: 300, tag: 'core',
+      week: 10, mins: 300, tag: 'core',
       summary: 'The concept that gates trees, graphs, backtracking and DP. Take two weeks if you need them.',
       blocks: [
         { k: 'p', body: [
@@ -821,7 +1394,7 @@ int fibMemo(int n, Integer[] memo) {
     {
       id: 'dsa-trees',
       name: 'Trees & traversals',
-      week: 10, mins: 260, tag: 'core',
+      week: 11, mins: 260, tag: 'core',
       summary: 'Recursion with two branches. Four traversals, and knowing which one to use.',
       blocks: [
         { k: 'p', body: [
@@ -914,7 +1487,7 @@ int checkBalanced(TreeNode n) {
     {
       id: 'dsa-bst',
       name: 'Binary search tree',
-      week: 11, mins: 200,
+      week: 12, mins: 200,
       summary: 'A tree with an ordering rule, which makes search O(log n) — until it does not.',
       blocks: [
         { k: 'p', body: [
@@ -1417,9 +1990,217 @@ int[] dijkstra(List<List<int[]>> graph, int start) {
     },
     /* ---------------------------------------------------------------- */
     {
+      id: 'dsa-advanced-graphs',
+      name: 'Advanced graphs — MST, bipartite & all-pairs',
+      week: 16, mins: 190,
+      summary: 'Minimum spanning trees, two-colouring, and the shortest-path algorithms Dijkstra cannot handle.',
+      blocks: [
+        { k: 'p', title: 'Minimum spanning tree', body: [
+          'Given a connected weighted graph, an **MST** is the cheapest set of edges that still keeps every vertex connected — exactly `V - 1` edges, no cycles. Think laying cable to every building for the least total cost.',
+          'Two algorithms, both greedy, both provably correct. **Kruskal** sorts all edges and adds the cheapest that does not create a cycle — which is exactly what Union-Find answers in O(1). **Prim** grows one tree outward, always taking the cheapest edge leaving it — which is exactly what a heap answers.',
+        ]},
+        { k: 'code', lang: 'java', cap: "Kruskal — sort edges, Union-Find rejects cycles", src: `// Reuses the UnionFind from the earlier topic. If union() returns false
+// the endpoints were already connected, so this edge would close a cycle.
+int kruskalMST(int n, int[][] edges) {       // edges: {u, v, weight}
+    Arrays.sort(edges, (a, b) -> Integer.compare(a[2], b[2]));
+
+    UnionFind uf = new UnionFind(n);
+    int totalCost = 0, used = 0;
+
+    for (int[] e : edges) {
+        if (uf.union(e[0], e[1])) {          // false => would form a cycle
+            totalCost += e[2];
+            if (++used == n - 1) break;      // a spanning tree is complete
+        }
+    }
+    return used == n - 1 ? totalCost : -1;   // -1 => graph was disconnected
+}` },
+        { k: 'code', lang: 'java', cap: 'Prim — grow one tree, heap picks the cheapest frontier edge', src: `// graph.get(u) holds int[]{neighbour, weight}
+int primMST(List<List<int[]>> graph) {
+    int n = graph.size();
+    boolean[] inTree = new boolean[n];
+    PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
+
+    pq.offer(new int[]{0, 0});               // start anywhere; cost 0
+    int total = 0, count = 0;
+
+    while (!pq.isEmpty() && count < n) {
+        int[] cur = pq.poll();
+        int node = cur[0], cost = cur[1];
+
+        if (inTree[node]) continue;          // stale entry, already absorbed
+        inTree[node] = true;
+        total += cost;
+        count++;
+
+        for (int[] edge : graph.get(node)) {
+            if (!inTree[edge[0]]) pq.offer(new int[]{edge[0], edge[1]});
+        }
+    }
+    return count == n ? total : -1;
+}` },
+        { k: 'table', title: 'Kruskal or Prim', head: ['', 'Kruskal', 'Prim'], rows: [
+          ['Time', 'O(E log E) — the sort', 'O(E log V) — the heap'],
+          ['Needs', 'Union-Find', 'A priority queue'],
+          ['Better for', '**Sparse** graphs (few edges)', '**Dense** graphs (many edges)'],
+          ['Works on a disconnected graph', 'Yes — produces a forest', 'No — only reaches one component'],
+        ]},
+        { k: 'code', lang: 'java', cap: 'Bipartite check — two-colouring with BFS', src: `// A graph is bipartite if you can split the vertices into two groups with
+// no edge inside a group — equivalently, it is 2-colourable, equivalently
+// it contains no ODD-length cycle.
+boolean isBipartite(List<List<Integer>> graph) {
+    int n = graph.size();
+    int[] colour = new int[n];
+    Arrays.fill(colour, -1);                 // -1 = uncoloured
+
+    for (int start = 0; start < n; start++) {
+        if (colour[start] != -1) continue;   // handle every component
+
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(start);
+        colour[start] = 0;
+
+        while (!q.isEmpty()) {
+            int node = q.poll();
+            for (int next : graph.get(node)) {
+                if (colour[next] == -1) {
+                    colour[next] = 1 - colour[node];   // opposite colour
+                    q.offer(next);
+                } else if (colour[next] == colour[node]) {
+                    return false;            // neighbours share a colour
+                }
+            }
+        }
+    }
+    return true;
+}` },
+        { k: 'p', title: 'When Dijkstra will not do', body: [
+          '**Bellman-Ford** — O(V × E). Relax every edge V-1 times. Slower than Dijkstra, but it handles **negative edge weights**, and one extra pass detects a negative cycle (if anything still improves, a cycle makes paths arbitrarily cheap). Use it for currency arbitrage, or "cheapest flight within k stops" where k bounds the relaxations.',
+          '**Floyd-Warshall** — O(V³). Shortest path between **every pair** of vertices, in three nested loops. Only viable for a few hundred vertices, but it is five lines and handles negative weights.',
+        ]},
+        { k: 'code', lang: 'java', cap: 'Floyd-Warshall — all pairs, three loops', src: `// dist[i][j] starts as the direct edge, or INF if none.
+void floydWarshall(int[][] dist, int n) {
+    for (int k = 0; k < n; k++) {            // k MUST be the OUTER loop:
+        for (int i = 0; i < n; i++) {        // "allow paths through 0..k"
+            for (int j = 0; j < n; j++) {
+                if (dist[i][k] != INF && dist[k][j] != INF) {
+                    dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+                }
+            }
+        }
+    }
+    // dist[i][i] < 0 for any i  =>  a negative cycle exists
+}` },
+        { k: 'note', tone: 'trap', title: 'The Floyd-Warshall loop order', body: 'The intermediate vertex `k` must be the **outermost** loop. The invariant is "dist is correct using only vertices 0..k as waypoints", and that only holds if every pair is updated for each k before moving to k+1. Swap the loops and you get wrong answers that look plausible — a classic bug.' },
+        { k: 'table', title: 'Choosing a shortest-path algorithm', head: ['Situation', 'Use', 'Cost'], rows: [
+          ['Unweighted (all edges equal)', '**BFS**', 'O(V + E)'],
+          ['Non-negative weights, one source', '**Dijkstra**', 'O((V+E) log V)'],
+          ['Negative weights possible', '**Bellman-Ford**', 'O(V × E)'],
+          ['Every pair, small graph', '**Floyd-Warshall**', 'O(V³)'],
+          ['DAG, any weights', 'Topological sort + relax', 'O(V + E)'],
+        ]},
+      ],
+    },
+    /* ---------------------------------------------------------------- */
+    {
+      id: 'dsa-segment-tree',
+      name: 'Segment tree & Fenwick tree',
+      week: 16, mins: 170,
+      summary: 'Range queries WITH updates, both in O(log n). What prefix sums cannot do.',
+      blocks: [
+        { k: 'p', body: [
+          'Prefix sums answer "sum of the range i..j" in O(1) — but if any element changes you must rebuild the whole array, O(n) per update. If the data changes often, that is unusable.',
+          'A **segment tree** stores aggregates over ranges in a tree, so both query and update are O(log n). A **Fenwick tree** (Binary Indexed Tree) does the same for sums in less code and less memory, at the cost of flexibility.',
+        ]},
+        { k: 'analogy', body: 'A company reporting structure. Asking the CEO for total headcount is instant because every manager keeps a running total for their own branch. When one person joins, you do not recount the company — you walk up that one chain of managers incrementing each total. One path, not the whole org.' },
+        { k: 'table', title: 'Which structure for which job', head: ['Need', 'Structure', 'Query', 'Update'], rows: [
+          ['Range sum, data never changes', 'Prefix sums', 'O(1)', 'O(n) — rebuild'],
+          ['Range sum, frequent updates', '**Fenwick tree**', 'O(log n)', 'O(log n)'],
+          ['Range min/max/gcd, frequent updates', '**Segment tree**', 'O(log n)', 'O(log n)'],
+          ['Range min/max, data never changes', 'Sparse table', 'O(1)', 'not supported'],
+        ]},
+        { k: 'code', lang: 'java', cap: 'Segment tree — array-backed, handles any associative operation', src: `class SegmentTree {
+    private final int[] tree;
+    private final int n;
+
+    // Node i covers a range; its children are 2i+1 and 2i+2.
+    // 4n is the safe size for the array backing (the tree is not always full).
+    SegmentTree(int[] a) {
+        n = a.length;
+        tree = new int[4 * n];
+        build(a, 0, 0, n - 1);
+    }
+
+    private void build(int[] a, int node, int lo, int hi) {
+        if (lo == hi) { tree[node] = a[lo]; return; }    // leaf = one element
+        int mid = lo + (hi - lo) / 2;
+        build(a, 2*node + 1, lo, mid);
+        build(a, 2*node + 2, mid + 1, hi);
+        tree[node] = tree[2*node + 1] + tree[2*node + 2];  // combine children
+    }                                 // ^ swap for Math.min / Math.max / gcd
+
+    int query(int from, int to) { return query(0, 0, n - 1, from, to); }
+
+    private int query(int node, int lo, int hi, int from, int to) {
+        if (to < lo || hi < from) return 0;              // no overlap (identity)
+        if (from <= lo && hi <= to) return tree[node];   // total overlap
+        int mid = lo + (hi - lo) / 2;                     // partial: split
+        return query(2*node + 1, lo, mid, from, to)
+             + query(2*node + 2, mid + 1, hi, from, to);
+    }
+
+    void update(int index, int value) { update(0, 0, n - 1, index, value); }
+
+    private void update(int node, int lo, int hi, int i, int value) {
+        if (lo == hi) { tree[node] = value; return; }
+        int mid = lo + (hi - lo) / 2;
+        if (i <= mid) update(2*node + 1, lo, mid, i, value);
+        else          update(2*node + 2, mid + 1, hi, i, value);
+        tree[node] = tree[2*node + 1] + tree[2*node + 2];   // recompute on the way up
+    }
+}` },
+        { k: 'cx', time: 'O(log n) query and update, O(n) build', space: 'O(n)', why: 'A query touches at most 4 nodes per level across log n levels. Build visits each node once. The 4n array is a safe over-allocation for a non-perfect tree.' },
+        { k: 'code', lang: 'java', cap: 'Fenwick tree — the same thing for sums, in a third of the code', src: `// Each index is responsible for a range whose length is its lowest set bit.
+// i & -i isolates that bit, which is the whole trick.
+class FenwickTree {
+    private final int[] tree;                 // 1-INDEXED internally
+
+    FenwickTree(int n) { tree = new int[n + 1]; }
+
+    /** Add delta at index i (0-based externally). */
+    void update(int i, int delta) {
+        for (i++; i < tree.length; i += i & -i) {   // walk UP the responsibility chain
+            tree[i] += delta;
+        }
+    }
+
+    /** Sum of [0..i] inclusive. */
+    int prefixSum(int i) {
+        int sum = 0;
+        for (i++; i > 0; i -= i & -i) {             // walk DOWN, collecting
+            sum += tree[i];
+        }
+        return sum;
+    }
+
+    int rangeSum(int from, int to) { return prefixSum(to) - prefixSum(from - 1); }
+}` },
+        { k: 'note', tone: 'tip', title: 'What is realistically expected', body: 'For a backend product interview you are unlikely to be asked to implement either from memory. What you *should* be able to do is **recognise the need**: when a question says "range queries with updates", say *"prefix sums give O(1) queries but O(n) updates; if updates are frequent I\'d use a Fenwick tree for sums or a segment tree for min/max, both O(log n) for each operation."* That sentence is the deliverable. Implement it once so the sentence is backed by understanding.' },
+        { k: 'list', title: 'Where it shows up', items: [
+          'Range sum query — mutable (the canonical problem)',
+          'Count of smaller numbers after self',
+          'Range minimum query with updates',
+          'Number of inversions in an array',
+          'My calendar / booking problems with overlap counts',
+          'In real systems: analytics over sliding time ranges, leaderboard rank queries',
+        ]},
+      ],
+    },
+    /* ---------------------------------------------------------------- */
+    {
       id: 'dsa-backtracking',
       name: 'Backtracking',
-      week: 16, mins: 260, tag: 'core',
+      week: 17, mins: 260, tag: 'core',
       summary: 'Try, recurse, undo. The pattern for "generate all possible…".',
       blocks: [
         { k: 'p', body: [
@@ -1548,7 +2329,7 @@ int fibOpt(int n) {
     {
       id: 'dsa-dp-1d',
       name: 'DP patterns — 1-D',
-      week: 17, mins: 260,
+      week: 18, mins: 260,
       summary: 'One array, one decision per position. Start here.',
       blocks: [
         { k: 'p', body: [
@@ -1613,7 +2394,7 @@ int coinChange(int[] coins, int amount) {
     {
       id: 'dsa-dp-knapsack',
       name: 'DP patterns — knapsack',
-      week: 18, mins: 260,
+      week: 19, mins: 260,
       summary: 'Take it or leave it, with a budget. One shape, many disguises.',
       blocks: [
         { k: 'p', body: [
@@ -1685,7 +2466,7 @@ boolean canPartition(int[] nums) {
     {
       id: 'dsa-dp-grid-string',
       name: 'DP patterns — grids & strings',
-      week: 19, mins: 280,
+      week: 20, mins: 280,
       summary: 'Two-dimensional tables. Edit distance, LCS, and the grid walks.',
       blocks: [
         { k: 'p', body: [
@@ -1829,7 +2610,7 @@ int eraseOverlapIntervals(int[][] intervals) {
     {
       id: 'dsa-intervals',
       name: 'Intervals',
-      week: 20, mins: 150,
+      week: 21, mins: 150,
       summary: 'Sort, then sweep. A small pattern with an outsized presence in interviews.',
       blocks: [
         { k: 'p', body: [

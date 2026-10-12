@@ -513,7 +513,7 @@ document.querySelector('#table').addEventListener('click', (e) => {
     {
       id: 'fe-react-core',
       name: 'React — components, JSX & state basics',
-      week: 21, mins: 120, tag: 'core',
+      week: 19, mins: 120, tag: 'core',
       summary: 'The mental model: UI as a function of state.',
       blocks: [
         { k: 'code', lang: 'javascript', cap: 'The fundamentals', src: `// A component is a function that takes props and returns JSX.

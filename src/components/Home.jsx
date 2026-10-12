@@ -45,7 +45,7 @@ export function Home() {
           </div>
           <div className="stat">
             <dt className="stat-k">Weekly load</dt>
-            <dd className="stat-v">14<small> hrs</small></dd>
+            <dd className="stat-v">15<small> hrs</small></dd>
           </div>
         </dl>
 
